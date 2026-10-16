@@ -24,6 +24,7 @@ Toca o teclado MIDI (feito pro AMW Master25 / "MIDI KeyBoard 25A") sem abrir DAW
   - **Apagar trecho** (`Delete`): tira as notas do trecho só daquela faixa.
   - **Desfazer** (`Ctrl+Z`): volta as edições, em vários níveis.
   - `Esc` limpa a seleção.
+- **Exportar WAV/MP3:** toca o mix 1, 2, 4 ou 8 voltas gravando a saída em tempo real, com a cauda do reverb opcional. Depois pede onde salvar (pasta Músicas por padrão). Tem WAV 16-bit e MP3 192 kbps (lamejs).
 - **Mod wheel** = vibrato · **Pitch bend** = ±2 semitons · **CC64** = sustain · **CC7** = volume
 - Teclado na tela (clique/arraste), detecção de acorde, osciloscópio e monitor do último sinal MIDI
 

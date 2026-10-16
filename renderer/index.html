@@ -78,6 +78,7 @@
         <button id="btn-mixes" class="mix-pill" title="Mixes salvos"><i data-icon="folder"></i><span id="mix-name"></span></button>
         <button id="btn-save" class="icon-btn ghost" title="Salvar mix (Ctrl+S)"><i data-icon="save"></i></button>
         <button id="t-add" class="ghost small-btn" title="Adicionar faixa"><i data-icon="plus"></i>Faixa</button>
+        <button id="btn-export" class="ghost small-btn" title="Exportar o mix em WAV ou MP3"><i data-icon="download"></i>Exportar</button>
         <span id="loop-info" class="muted small mono"></span>
         <span class="spacer"></span>
         <div id="edit-tools" class="edit-tools hidden">
@@ -126,6 +127,28 @@
         <button id="mix-new" class="ghost" title="Começa um mix vazio"><i data-icon="plus"></i>Novo</button>
       </div>
       <div id="mix-list"></div>
+    </div>
+  </div>
+  <div id="export-modal" class="hidden">
+    <div class="modal panel">
+      <div class="panel-head"><h2><i data-icon="download"></i>Exportar mix</h2><span class="spacer"></span>
+        <button id="x-close" class="icon-btn ghost"><i data-icon="x"></i></button></div>
+      <div class="x-body">
+        <div class="x-row"><span class="lbl">Formato</span>
+          <div class="seg" id="x-format"><button data-f="wav">WAV <span class="muted small">sem perda</span></button><button data-f="mp3">MP3 <span class="muted small">192 kbps</span></button></div></div>
+        <div class="x-row"><span class="lbl">Voltas</span>
+          <div class="seg" id="x-reps"><button data-r="1">1</button><button data-r="2">2</button><button data-r="4">4</button><button data-r="8">8</button></div></div>
+        <label class="switch"><input type="checkbox" id="x-tail"><span class="knob-sw"></span>Deixar a cauda do reverb/delay no fim</label>
+        <div class="x-sum muted small" id="x-sum"></div>
+        <div id="x-progress" class="hidden">
+          <div class="x-track"><span id="x-bar"></span></div>
+          <div class="x-prow"><span id="x-status" class="small"></span><span class="spacer"></span><button id="x-cancel" class="small-btn ghost">Cancelar</button></div>
+        </div>
+        <div id="x-done" class="x-done hidden"><i data-icon="check"></i><span id="x-done-name"></span><span class="spacer"></span>
+          <button id="x-reveal" class="small-btn"><i data-icon="folder"></i>Mostrar na pasta</button></div>
+        <div class="x-actions"><span class="muted small">O que você tocar durante a gravação também entra.</span><span class="spacer"></span>
+          <button id="x-go" class="primary-btn"><i data-icon="download"></i>Gravar e exportar</button></div>
+      </div>
     </div>
   </div>
   <div id="toasts"></div>

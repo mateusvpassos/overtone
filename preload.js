@@ -5,5 +5,7 @@ contextBridge.exposeInMainWorld('api', {
   saveMix: (name, data) => ipcRenderer.invoke('mix:save', name, data),
   loadMix: file => ipcRenderer.invoke('mix:load', file),
   deleteMix: file => ipcRenderer.invoke('mix:delete', file),
-  openMixFolder: () => ipcRenderer.invoke('mix:folder')
+  openMixFolder: () => ipcRenderer.invoke('mix:folder'),
+  exportAudio: (name, format, rate, left, right) => ipcRenderer.invoke('export:audio', name, format, rate, left, right),
+  reveal: file => ipcRenderer.invoke('export:reveal', file)
 });

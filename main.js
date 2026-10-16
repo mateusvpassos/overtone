@@ -1,4 +1,5 @@
-const { app, BrowserWindow, session, ipcMain, shell } = require('electron');
+const { app, BrowserWindow, session, ipcMain, shell, dialog } = require('electron');
+const { writeAudio } = require('./exporter');
 const path = require('path');
 const fs = require('fs');
 
@@ -61,6 +62,20 @@ ipcMain.handle('mix:load', (_, file) => JSON.parse(fs.readFileSync(inDir(file), 
 // excluir manda pra Lixeira (dá pra recuperar)
 ipcMain.handle('mix:delete', (_, file) => shell.trashItem(inDir(file)));
 ipcMain.handle('mix:folder', () => shell.openPath(mixDir()));
+
+// ---------- exportar WAV/MP3 ----------
+ipcMain.handle('export:audio', async (_, name, format, rate, left, right) => {
+  const ext = format === 'mp3' ? 'mp3' : 'wav';
+  const r = await dialog.showSaveDialog(win, {
+    title: 'Exportar mix',
+    defaultPath: path.join(app.getPath('music'), `${slug(name || 'overtone')}.${ext}`),
+    filters: [ext === 'mp3' ? { name: 'MP3', extensions: ['mp3'] } : { name: 'WAV', extensions: ['wav'] }]
+  });
+  if (r.canceled || !r.filePath) return null;
+  const bytes = writeAudio(r.filePath, left, right, rate);
+  return { file: r.filePath, bytes };
+});
+ipcMain.handle('export:reveal', (_, file) => shell.showItemInFolder(file));
 
 app.on('second-instance', () => {
   if (!win) return;

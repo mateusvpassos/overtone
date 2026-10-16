@@ -1240,6 +1240,83 @@ window.addEventListener('keydown', e => {
   if (e.ctrlKey && e.code === 'KeyS') { e.preventDefault(); saveMix(); }
 }, true);
 
+// ---------- exportar WAV/MP3: toca o mix N voltas gravando a saída, mais a cauda do reverb ----------
+const exp = { format: 'wav', reps: 2, tail: true, running: null, last: null };
+
+function renderExport() {
+  for (const b of document.querySelectorAll('#x-format button')) b.classList.toggle('on', b.dataset.f === exp.format);
+  for (const b of document.querySelectorAll('#x-reps button')) b.classList.toggle('on', +b.dataset.r === exp.reps);
+  $('#x-tail').checked = exp.tail;
+  const secs = looper.len * exp.reps / 1000 + (exp.tail ? 2.5 : 0);
+  $('#x-sum').textContent = looper.len
+    ? `${exp.reps} ${exp.reps === 1 ? 'volta' : 'voltas'} de ${(looper.len / 1000).toFixed(1)}s ≈ ${secs.toFixed(1)}s de áudio · grava em tempo real`
+    : 'Grave um loop antes de exportar.';
+  $('#x-go').disabled = !looper.len || !!exp.running;
+  $('#x-progress').classList.toggle('hidden', !exp.running);
+  $('#x-done').classList.toggle('hidden', !exp.last || !!exp.running);
+  if (exp.last) $('#x-done-name').textContent = exp.last.file.split(/[\\/]/).pop();
+}
+
+function openExport() {
+  $('#export-modal').classList.remove('hidden');
+  renderExport();
+}
+function closeExport() {
+  if (exp.running) exp.running.cancel = true;
+  $('#export-modal').classList.add('hidden');
+}
+
+async function runExport() {
+  if (!looper.len || exp.running) return;
+  if (looper.rec !== null) endRec();
+  const job = exp.running = { cancel: false };
+  exp.last = null;
+  loopPlay(false);
+  await Engine.startCapture();
+  loopPlay(true);
+  const total = looper.len * exp.reps;
+  const tail = exp.tail ? 2500 : 150;
+  renderExport();
+  // espera as voltas (atualizando a barra), para o loop e grava a cauda
+  await new Promise(res => {
+    const tick = () => {
+      const t = now() - looper.start;
+      $('#x-bar').style.width = Math.min(100, t / (total + tail) * 100) + '%';
+      $('#x-status').textContent = t < total ? `Gravando volta ${Math.min(exp.reps, Math.floor(t / looper.len) + 1)}/${exp.reps}…` : 'Gravando a cauda…';
+      if (job.cancel) return res();
+      if (t >= total && looper.playing) loopPlay(false);
+      if (t >= total + tail) return res();
+      requestAnimationFrame(tick);
+    };
+    tick();
+  });
+  if (looper.playing) loopPlay(false);
+  const pcm = Engine.stopCapture();
+  if (job.cancel) {
+    exp.running = null;
+    renderExport();
+    return toast(icon('x') + 'Exportação cancelada');
+  }
+  $('#x-status').textContent = 'Escolha onde salvar…';
+  const res = await window.api.exportAudio(mix.name || 'overtone', exp.format, pcm.rate, pcm.left, pcm.right);
+  exp.running = null;
+  if (res) {
+    exp.last = res;
+    toast(icon('check') + `Exportado: ${escapeHtml(res.file.split(/[\\/]/).pop())} (${(res.bytes / 1048576).toFixed(1)} MB)`);
+  }
+  renderExport();
+}
+
+$('#btn-export').addEventListener('click', openExport);
+$('#x-close').addEventListener('click', closeExport);
+$('#export-modal').addEventListener('pointerdown', e => { if (e.target.id === 'export-modal' && !exp.running) closeExport(); });
+$('#x-format').addEventListener('click', e => { const b = e.target.closest('button'); if (b) { exp.format = b.dataset.f; renderExport(); } });
+$('#x-reps').addEventListener('click', e => { const b = e.target.closest('button'); if (b) { exp.reps = +b.dataset.r; renderExport(); } });
+$('#x-tail').addEventListener('change', e => { exp.tail = e.target.checked; renderExport(); });
+$('#x-go').addEventListener('click', runExport);
+$('#x-cancel').addEventListener('click', () => { if (exp.running) exp.running.cancel = true; });
+$('#x-reveal').addEventListener('click', () => exp.last && window.api.reveal(exp.last.file));
+
 // ---------- osciloscópio ----------
 (() => {
   const cv = $('#scope');

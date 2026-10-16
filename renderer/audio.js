@@ -434,6 +434,30 @@ const Engine = (() => {
     set(name, val) { p[name] = val; apply(); },
     setBpm(b) { bpm = b; apply(); },
     setKit(k) { currentKit = k; },
+    // gravação do mestre (pós-compressor) para exportar
+    async startCapture() {
+      if (ctx.state !== 'running') await ctx.resume();
+      if (!this._recReady) { await ctx.audioWorklet.addModule('rec-worklet.js'); this._recReady = true; }
+      const node = new AudioWorkletNode(ctx, 'rec', { numberOfInputs: 1, numberOfOutputs: 1, outputChannelCount: [2] });
+      const mute = ctx.createGain();
+      mute.gain.value = 0;
+      const chunks = [];
+      node.port.onmessage = e => chunks.push(e.data);
+      analyser.connect(node).connect(mute).connect(ctx.destination);
+      this._cap = { node, mute, chunks };
+    },
+    stopCapture() {
+      const { node, mute, chunks } = this._cap;
+      this._cap = null;
+      node.port.onmessage = null;
+      analyser.disconnect(node);
+      node.disconnect(); mute.disconnect();
+      const n = chunks.reduce((s, c) => s + c[0].length, 0);
+      const left = new Float32Array(n), right = new Float32Array(n);
+      let o = 0;
+      for (const [l, r] of chunks) { left.set(l, o); right.set(r, o); o += l.length; }
+      return { left, right, rate: ctx.sampleRate };
+    },
     // canal de volume de uma faixa de loop (síntese, bateria e bateria lo-fi passam por ele)
     bus(vol = 1) {
       const mk = dest => { const g = ctx.createGain(); g.gain.value = vol; g.connect(dest); return g; };

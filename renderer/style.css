@@ -341,7 +341,7 @@ body.mapping .knob.learn, body.mapping .pad.learn {
 .mix-pill { height: 26px; max-width: 220px; gap: 6px; background: var(--panel-2); color: var(--muted); font-size: 12px; margin-left: 6px; }
 .mix-pill span { overflow: hidden; text-overflow: ellipsis; }
 .mix-pill.dirty { color: var(--warn); }
-#mix-modal { position: fixed; inset: 0; z-index: 950; background: rgba(5, 6, 10, .6); display: grid; place-items: center; }
+#mix-modal, #export-modal { position: fixed; inset: 0; z-index: 950; background: rgba(5, 6, 10, .6); display: grid; place-items: center; }
 .modal { width: 560px; max-height: 70vh; box-shadow: 0 30px 70px -10px rgba(0,0,0,.8); }
 .mix-save-row { display: flex; gap: 8px; padding: 12px 14px; border-bottom: 1px solid var(--border); }
 #mix-input { flex: 1; height: 34px; padding: 0 12px; font-size: 13.5px; background: var(--field); border: 1px solid var(--border-2); border-radius: var(--radius); outline: none; user-select: text; }
@@ -354,6 +354,19 @@ body.mapping .knob.learn, body.mapping .pad.learn {
 .mix-item.on { border-color: var(--accent-line); background: var(--accent-soft); }
 .mix-item b { display: block; font-size: 13px; }
 .mix-empty { padding: 30px; text-align: center; }
+
+/* ---------- exportar ---------- */
+.x-body { padding: 14px 16px 16px; display: flex; flex-direction: column; gap: 12px; }
+.x-row { display: flex; align-items: center; gap: 12px; }
+.x-row .lbl { width: 64px; }
+.x-sum { padding: 9px 11px; border-radius: 8px; background: var(--field); border: 1px solid var(--border); }
+.x-track { height: 6px; border-radius: 6px; background: var(--field); overflow: hidden; }
+#x-bar { display: block; height: 100%; width: 0; background: var(--grad); }
+.x-prow { display: flex; align-items: center; margin-top: 6px; }
+.x-done { display: flex; align-items: center; gap: 8px; padding: 8px 8px 8px 11px; border-radius: 8px; background: rgba(61, 220, 151, .08); border: 1px solid rgba(61, 220, 151, .3); font-size: 12.5px; }
+.x-done .ic { color: var(--ok); }
+.x-actions { display: flex; align-items: center; gap: 10px; margin-top: 2px; }
+.primary-btn:disabled { opacity: .45; cursor: default; filter: none; }
 
 /* ---------- assistente ---------- */
 #wizard {
