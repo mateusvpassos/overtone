@@ -879,6 +879,9 @@ window.addEventListener('keydown', e => {
 
 $('#q-grid').value = S.qGrid;
 boot();
+Engine.loadSamples(window.api.readSample)
+  .then(() => { document.querySelector('.sound[data-id="grand"] .ds')?.replaceChildren('Steinway gravado, 2 camadas de força'); })
+  .catch(e => { console.error(e); toast(icon('x') + 'Não consegui carregar o piano/bateria gravados'); });
 renderArp();
 renderCount();
 renderScenes();

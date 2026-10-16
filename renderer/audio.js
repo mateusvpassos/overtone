@@ -3,6 +3,10 @@
 const PRESETS = [
   // ---- teclas ----
   {
+    id: 'grand', cat: 'Teclas', name: 'Piano de cauda', desc: 'Steinway gravado, 2 camadas de força', icon: 'piano', c: '#e7e5e4',
+    sampler: 'piano', osc: [], filter: { f: 16000, q: .3 }, env: { a: .001, d: 1, s: 1, r: .45 }, vib: 0
+  },
+  {
     id: 'piano', cat: 'Teclas', name: 'Piano elétrico', desc: 'Timbre de Rhodes, decai sozinho', icon: 'piano', c: '#ffbf47',
     osc: [{ type: 'sine', gain: .7 }, { type: 'triangle', gain: .18, ratio: 2 }],
     fm: { ratio: 1, index: 1.8, decay: .8 },
@@ -104,6 +108,7 @@ const PRESETS = [
 
 const KITS = [
   { id: 'acustico', name: 'Acústico' },
+  { id: 'eletronico', name: 'Eletrônico' },
   { id: '808', name: '808' },
   { id: 'lofi', name: 'Lo-fi' }
 ];
@@ -205,7 +210,9 @@ const Engine = (() => {
 
   function noteOn(note, vel = 100, presetId, bus) {
     if (ctx.state !== 'running') ctx.resume();
-    const P = PRESETS.find(x => x.id === presetId) || currentPreset;
+    let P = PRESETS.find(x => x.id === presetId) || currentPreset;
+    // piano gravado ainda carregando: usa o elétrico
+    if (P.sampler && !SAMPLES.piano.length) P = PRESETS.find(x => x.id === 'piano');
     if (voices.size >= 32) kill([...voices][0]);
     const t = ctx.currentTime;
     const freq = 440 * 2 ** ((note - 69) / 12);
@@ -236,7 +243,7 @@ const Engine = (() => {
       mod.osc.start(t);
     }
 
-    const oscs = P.osc.map(o => {
+    const oscs = P.sampler ? [sampleOsc(note, vel, t, filt)] : P.osc.map(o => {
       const osc = ctx.createOscillator();
       osc.type = o.type;
       osc.frequency.value = freq * (o.ratio || 1);
@@ -264,6 +271,52 @@ const Engine = (() => {
     return voice;
   }
   let currentVib = 0;
+
+  // ---------- samples (piano e bateria acústica, VCSL CC0) ----------
+  const SAMPLES = { piano: [], drums: {}, rr: {} };
+  async function loadSamples(read) {
+    const toBuf = async f => {
+      const u8 = await read(f);
+      return ctx.decodeAudioData(u8.buffer.slice(u8.byteOffset, u8.byteOffset + u8.byteLength));
+    };
+    const man = JSON.parse(new TextDecoder().decode(await read('samples.json')));
+    const drums = {};
+    await Promise.all(Object.entries(man.drums).map(async ([id, files]) => { drums[id] = await Promise.all(files.map(toBuf)); }));
+    SAMPLES.drums = drums;
+    const zones = await Promise.all(man.piano.map(async z => ({ ...z, buf: await toBuf(z.file) })));
+    SAMPLES.piano = zones;
+  }
+  // camada suave abaixo de vel 84; zona mais próxima da nota
+  function sampleOsc(note, vel, t, dest) {
+    const layer = vel >= 84 ? 'hard' : 'soft';
+    let best = null;
+    for (const z of SAMPLES.piano) if (z.layer === layer && (!best || Math.abs(z.note - note) < Math.abs(best.note - note))) best = z;
+    const src = ctx.createBufferSource();
+    src.buffer = best.buf;
+    src.playbackRate.value = 2 ** ((note - best.note) / 12);
+    src.detune.value = bend;
+    const g = ctx.createGain();
+    g.gain.value = layer === 'soft' ? 2.2 : 2.8;
+    src.connect(g).connect(dest);
+    lfoDepth.connect(src.detune);
+    src.start(t);
+    return { osc: src, base: 0 };
+  }
+  function sampleDrum(id, vel, t, out) {
+    const list = SAMPLES.drums[id];
+    if (!list?.length) return false;
+    let buf;
+    if (id === 'kick' || id === 'snare') buf = list[Math.min(list.length - 1, Math.floor(vel / 128 * list.length))];
+    else buf = list[(SAMPLES.rr[id] = ((SAMPLES.rr[id] || 0) + 1) % list.length)];
+    const s = ctx.createBufferSource();
+    s.buffer = buf;
+    s.playbackRate.value = 1 + (Math.random() - .5) * .015; // leve variação, soa menos repetido
+    const g = ctx.createGain();
+    g.gain.value = .85;
+    s.connect(g).connect(out);
+    s.start(t);
+    return true;
+  }
 
   function noteOff(voice) {
     if (!voice || voice.done || voice.released) return;
@@ -363,6 +416,10 @@ const Engine = (() => {
     const out = ctx.createGain();
     out.gain.value = (vel / 127) ** 1.2;
     out.connect(kit === 'lofi' && id !== 'click' ? (bus ? bus.lofi : lofiIn) : bus ? bus.drum : drumBus);
+    if ((kit === 'acustico' || kit === 'lofi') && id !== 'click' && sampleDrum(id, vel, t, out)) {
+      setTimeout(() => out.disconnect(), (t - ctx.currentTime + 3.5) * 1000);
+      return;
+    }
     if (kit === '808') {
       const done = {
         kick: () => tone(t, 'sine', 125, 48, .07, 1.1, 1.1, out),
@@ -436,6 +493,8 @@ const Engine = (() => {
     set(name, val) { p[name] = val; apply(); },
     setBpm(b) { bpm = b; apply(); },
     setKit(k) { currentKit = k; },
+    loadSamples,
+    samplesReady: () => SAMPLES.piano.length > 0,
     // gravação do mestre (pós-compressor) para exportar
     async startCapture() {
       if (ctx.state !== 'running') await ctx.resume();

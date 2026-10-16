@@ -1,0 +1,246 @@
+{
+ "piano": [
+  {
+   "note": 24,
+   "layer": "hard",
+   "file": "piano/24_hard.ogg"
+  },
+  {
+   "note": 24,
+   "layer": "soft",
+   "file": "piano/24_soft.ogg"
+  },
+  {
+   "note": 28,
+   "layer": "hard",
+   "file": "piano/28_hard.ogg"
+  },
+  {
+   "note": 28,
+   "layer": "soft",
+   "file": "piano/28_soft.ogg"
+  },
+  {
+   "note": 32,
+   "layer": "hard",
+   "file": "piano/32_hard.ogg"
+  },
+  {
+   "note": 32,
+   "layer": "soft",
+   "file": "piano/32_soft.ogg"
+  },
+  {
+   "note": 36,
+   "layer": "hard",
+   "file": "piano/36_hard.ogg"
+  },
+  {
+   "note": 36,
+   "layer": "soft",
+   "file": "piano/36_soft.ogg"
+  },
+  {
+   "note": 40,
+   "layer": "hard",
+   "file": "piano/40_hard.ogg"
+  },
+  {
+   "note": 40,
+   "layer": "soft",
+   "file": "piano/40_soft.ogg"
+  },
+  {
+   "note": 44,
+   "layer": "hard",
+   "file": "piano/44_hard.ogg"
+  },
+  {
+   "note": 44,
+   "layer": "soft",
+   "file": "piano/44_soft.ogg"
+  },
+  {
+   "note": 48,
+   "layer": "hard",
+   "file": "piano/48_hard.ogg"
+  },
+  {
+   "note": 48,
+   "layer": "soft",
+   "file": "piano/48_soft.ogg"
+  },
+  {
+   "note": 52,
+   "layer": "hard",
+   "file": "piano/52_hard.ogg"
+  },
+  {
+   "note": 52,
+   "layer": "soft",
+   "file": "piano/52_soft.ogg"
+  },
+  {
+   "note": 56,
+   "layer": "hard",
+   "file": "piano/56_hard.ogg"
+  },
+  {
+   "note": 56,
+   "layer": "soft",
+   "file": "piano/56_soft.ogg"
+  },
+  {
+   "note": 60,
+   "layer": "hard",
+   "file": "piano/60_hard.ogg"
+  },
+  {
+   "note": 60,
+   "layer": "soft",
+   "file": "piano/60_soft.ogg"
+  },
+  {
+   "note": 64,
+   "layer": "hard",
+   "file": "piano/64_hard.ogg"
+  },
+  {
+   "note": 64,
+   "layer": "soft",
+   "file": "piano/64_soft.ogg"
+  },
+  {
+   "note": 68,
+   "layer": "hard",
+   "file": "piano/68_hard.ogg"
+  },
+  {
+   "note": 68,
+   "layer": "soft",
+   "file": "piano/68_soft.ogg"
+  },
+  {
+   "note": 72,
+   "layer": "hard",
+   "file": "piano/72_hard.ogg"
+  },
+  {
+   "note": 72,
+   "layer": "soft",
+   "file": "piano/72_soft.ogg"
+  },
+  {
+   "note": 76,
+   "layer": "hard",
+   "file": "piano/76_hard.ogg"
+  },
+  {
+   "note": 76,
+   "layer": "soft",
+   "file": "piano/76_soft.ogg"
+  },
+  {
+   "note": 80,
+   "layer": "hard",
+   "file": "piano/80_hard.ogg"
+  },
+  {
+   "note": 80,
+   "layer": "soft",
+   "file": "piano/80_soft.ogg"
+  },
+  {
+   "note": 84,
+   "layer": "hard",
+   "file": "piano/84_hard.ogg"
+  },
+  {
+   "note": 84,
+   "layer": "soft",
+   "file": "piano/84_soft.ogg"
+  },
+  {
+   "note": 88,
+   "layer": "hard",
+   "file": "piano/88_hard.ogg"
+  },
+  {
+   "note": 88,
+   "layer": "soft",
+   "file": "piano/88_soft.ogg"
+  },
+  {
+   "note": 92,
+   "layer": "hard",
+   "file": "piano/92_hard.ogg"
+  },
+  {
+   "note": 92,
+   "layer": "soft",
+   "file": "piano/92_soft.ogg"
+  },
+  {
+   "note": 96,
+   "layer": "hard",
+   "file": "piano/96_hard.ogg"
+  },
+  {
+   "note": 96,
+   "layer": "soft",
+   "file": "piano/96_soft.ogg"
+  },
+  {
+   "note": 100,
+   "layer": "hard",
+   "file": "piano/100_hard.ogg"
+  },
+  {
+   "note": 100,
+   "layer": "soft",
+   "file": "piano/100_soft.ogg"
+  },
+  {
+   "note": 104,
+   "layer": "hard",
+   "file": "piano/104_hard.ogg"
+  },
+  {
+   "note": 104,
+   "layer": "soft",
+   "file": "piano/104_soft.ogg"
+  }
+ ],
+ "drums": {
+  "kick": [
+   "drums/kick_1.ogg",
+   "drums/kick_2.ogg"
+  ],
+  "snare": [
+   "drums/snare_1.ogg",
+   "drums/snare_2.ogg",
+   "drums/snare_3.ogg"
+  ],
+  "hat": [
+   "drums/hat_1.ogg",
+   "drums/hat_2.ogg"
+  ],
+  "openhat": [
+   "drums/openhat_1.ogg"
+  ],
+  "clap": [
+   "drums/clap_1.ogg",
+   "drums/clap_2.ogg"
+  ],
+  "tom": [
+   "drums/tom_1.ogg"
+  ],
+  "cowbell": [
+   "drums/cowbell_1.ogg"
+  ],
+  "crash": [
+   "drums/crash_1.ogg"
+  ]
+ },
+ "source": "VCSL \u2014 Versilian Community Sample Library (CC0 1.0), github.com/sgossner/VCSL"
+}

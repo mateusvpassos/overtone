@@ -12,5 +12,6 @@ contextBridge.exposeInMainWorld('api', {
   writeAudioTo: (dir, name, format, rate, left, right) => ipcRenderer.invoke('export:audio-to', dir, name, format, rate, left, right),
   saveFile: (name, ext, bytes) => ipcRenderer.invoke('export:file', name, ext, bytes),
   autosave: data => ipcRenderer.send('auto:save', data),
-  autosaveLoad: () => ipcRenderer.invoke('auto:load')
+  autosaveLoad: () => ipcRenderer.invoke('auto:load'),
+  readSample: file => ipcRenderer.invoke('sample:read', file)
 });

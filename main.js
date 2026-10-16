@@ -97,6 +97,14 @@ ipcMain.handle('export:file', async (_, name, ext, bytes) => {
   return { file: r.filePath, bytes: bytes.length };
 });
 
+// ---------- samples empacotados (renderer/samples) ----------
+const sampleDir = path.join(__dirname, 'renderer', 'samples');
+ipcMain.handle('sample:read', (_, file) => {
+  const f = path.resolve(sampleDir, file);
+  if (!f.startsWith(sampleDir + path.sep)) throw new Error('caminho inválido');
+  return fs.readFileSync(f);
+});
+
 // ---------- salvamento automático da sessão ----------
 const autoFile = () => path.join(app.getPath('userData'), 'autosave.json');
 ipcMain.on('auto:save', (_, data) => {
