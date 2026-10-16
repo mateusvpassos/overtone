@@ -277,6 +277,13 @@ select:focus { border-color: var(--accent); }
 .lane .head { position: absolute; top: 0; bottom: 0; width: 2px; left: 0; background: var(--text); opacity: 0; box-shadow: 0 0 6px var(--text); }
 #loop-tracks.moving .head { opacity: .55; }
 .l-empty { position: absolute; left: 10px; top: 50%; transform: translateY(-50%); font: normal 500 11px var(--font); color: var(--dim); white-space: nowrap; }
+.lane { cursor: crosshair; }
+.lsel {
+  position: absolute; top: 0; bottom: 0; display: none;
+  background: rgba(255, 191, 71, .16); border-left: 2px solid var(--warn); border-right: 2px solid var(--warn);
+}
+.edit-tools { display: flex; align-items: center; gap: 6px; padding-right: 6px; margin-right: 4px; border-right: 1px solid var(--border); }
+.edit-tools #e-range { color: var(--warn); margin-right: 2px; }
 .l-count { font-size: 11px; color: var(--muted); text-align: right; }
 
 /* ---------- categorias de som ---------- */

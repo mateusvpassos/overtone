@@ -394,6 +394,9 @@ function detectChord(notes) {
 // ---------- teclado do PC ----------
 const PC_KEYS = { KeyA: 0, KeyW: 1, KeyS: 2, KeyE: 3, KeyD: 4, KeyF: 5, KeyT: 6, KeyG: 7, KeyY: 8, KeyH: 9, KeyU: 10, KeyJ: 11, KeyK: 12, KeyO: 13, KeyL: 14, KeyP: 15, Semicolon: 16 };
 window.addEventListener('keydown', e => {
+  if (e.ctrlKey && e.code === 'KeyZ') return undoEdit();
+  if (e.code === 'Delete' && looper.range) return cutRange();
+  if (e.code === 'Escape' && looper.range) { looper.range = null; return renderLoops(); }
   if (e.target.tagName === 'SELECT' || e.ctrlKey || e.altKey || e.metaKey) return;
   if (e.repeat) { if (e.code in PC_KEYS || /^Digit[1-8]$/.test(e.code) || e.code === 'Space') e.preventDefault(); return; }
   Engine.resume();
@@ -614,7 +617,7 @@ $('#bpm').addEventListener('click', e => {
 // Gravar numa faixa que já tem notas sobrepõe. Cada nota guarda o som/kit com que foi gravada.
 const LOOP_COLORS = ['#22c3e6', '#ff9f6e', '#c084fc', '#3ddc97'];
 const looper = {
-  len: 0, start: 0, last: 0, playing: false, rec: null, sel: 0, timer: null,
+  len: 0, start: 0, last: 0, playing: false, rec: null, waiting: false, sel: 0, timer: null, range: null, undo: [],
   tracks: LOOP_COLORS.map((c, i) => ({ c, name: 'Loop ' + (i + 1), events: [], mute: false }))
 };
 const now = () => performance.now();
@@ -623,6 +626,13 @@ const realSrcs = () => [...held.keys()].filter(k => !k.startsWith('L'));
 
 function loopRecord(ev) {
   if (looper.rec === null) return;
+  // armado: o primeiro loop só começa a contar na primeira nota/pad
+  if (looper.waiting) {
+    if (ev.type === 'off') return;
+    looper.waiting = false;
+    looper.start = now();
+    renderLoops();
+  }
   const tr = looper.tracks[looper.rec];
   // na sobreposição, não repete na mesma volta o que acabou de ser tocado
   tr.events.push({ ...ev, t: loopPos(), skip: looper.len ? now() + looper.len - 30 : 0 });
@@ -637,14 +647,9 @@ function loopRec(i = looper.sel) {
   looper.sel = i;
   looper.rec = i;
   if (!looper.len) {
-    looper.start = now();
+    looper.waiting = true;
     for (const tr of looper.tracks) tr.events = [];
   } else if (!looper.playing) loopPlay(true);
-  // notas já seguradas entram agora
-  for (const src of realSrcs()) {
-    const h = held.get(src);
-    loopRecord({ type: 'on', src, notes: h.notes, vel: 100, preset: S.preset });
-  }
   ensureTimer();
   renderLoops();
 }
@@ -652,6 +657,11 @@ function loopRec(i = looper.sel) {
 function endRec() {
   const tr = looper.tracks[looper.rec];
   if (!looper.len) {
+    if (looper.waiting) {
+      looper.waiting = false;
+      looper.rec = null;
+      return renderLoops();
+    }
     let len = now() - looper.start;
     if (metro.on) {
       const bar = 4 * 60000 / S.bpm;
@@ -713,6 +723,7 @@ function toggleMute(i) {
 }
 
 function clearTrack(i) {
+  snapshot();
   releaseLoop(i);
   looper.tracks[i].events = [];
   if (looper.rec === i) looper.rec = null;
@@ -722,6 +733,7 @@ function clearTrack(i) {
 }
 
 function clearAll() {
+  snapshot();
   releaseLoop();
   for (const tr of looper.tracks) tr.events = [];
   resetLooper();
@@ -733,6 +745,8 @@ function resetLooper() {
   looper.len = 0;
   looper.playing = false;
   looper.rec = null;
+  looper.waiting = false;
+  looper.range = null;
 }
 
 function ensureTimer() {
@@ -774,7 +788,7 @@ function renderLoops() {
         <span class="l-name"><span class="l-dot"></span>${tr.name}</span>
         <button class="icon-btn l-rec" title="Gravar nesta faixa (R)">${icon('record')}</button>
         <button class="icon-btn l-mute" title="Mudo"></button>
-        <div class="lane"><div class="marks"></div><span class="head"></span><em class="l-empty"></em></div>
+        <div class="lane" title="Arraste para selecionar um trecho (cortar / apagar)"><div class="marks"></div><span class="lsel"></span><span class="head"></span><em class="l-empty"></em></div>
         <span class="l-count mono"></span>
         <button class="icon-btn ghost l-clear" title="Apagar esta faixa">${icon('trash')}</button>
       </div>`).join('');
@@ -788,7 +802,7 @@ function renderLoops() {
     row.classList.toggle('muted', tr.mute);
     row.querySelector('.l-mute').innerHTML = icon(tr.mute ? 'mute' : 'volume');
     row.querySelector('.l-count').textContent = n || '';
-    row.querySelector('.l-empty').textContent = n ? '' : i === looper.rec ? 'gravando…' : looper.len ? 'vazio · grava por cima no mesmo tamanho' : i === looper.sel ? 'vazio · R grava e define o tamanho' : 'vazio';
+    row.querySelector('.l-empty').textContent = n ? '' : i === looper.rec ? (looper.waiting ? 'armado · começa na primeira nota' : 'gravando…') : looper.len ? 'vazio · grava por cima no mesmo tamanho' : i === looper.sel ? 'vazio · R grava e define o tamanho' : 'vazio';
   });
   const playing = looper.playing;
   $('#t-play').classList.toggle('on', playing);
@@ -798,8 +812,20 @@ function renderLoops() {
     info = `${(looper.len / 1000).toFixed(1)}s`;
     if (metro.on) info += ` · ${Math.round(looper.len / (4 * 60000 / S.bpm))} compasso(s)`;
     if (!playing) info += ' · parado';
-  } else if (looper.rec !== null) info = 'gravando o primeiro loop…';
+  } else if (looper.rec !== null) info = looper.waiting ? 'armado · toque algo para começar' : 'gravando o primeiro loop…';
   $('#loop-info').textContent = info;
+  const r = looper.range;
+  $('#edit-tools').classList.toggle('hidden', !r && !looper.undo.length);
+  $('#e-keep').classList.toggle('hidden', !r);
+  $('#e-cut').classList.toggle('hidden', !r);
+  $('#e-undo').classList.toggle('hidden', !looper.undo.length);
+  if (r) $('#e-range').textContent = `${looper.tracks[r.ti].name} · ${(r.a / 1000).toFixed(2)}–${(r.b / 1000).toFixed(2)}s`;
+  else $('#e-range').textContent = '';
+  looper.tracks.forEach((_, i) => {
+    const el = $('#loop-tracks').children[i].querySelector('.lsel');
+    el.style.display = r && r.ti === i ? 'block' : 'none';
+    if (r && r.ti === i) { el.style.left = r.a / looper.len * 100 + '%'; el.style.width = (r.b - r.a) / looper.len * 100 + '%'; }
+  });
   renderPads();
 }
 
@@ -838,8 +864,34 @@ function drawLane(i) {
     if (e.target.closest('.l-rec')) return loopRec(i);
     if (e.target.closest('.l-mute')) return toggleMute(i);
     if (e.target.closest('.l-clear')) return clearTrack(i);
+    if (e.target.closest('.lane') && looper.range?.moved) return;
     selectTrack(i);
   });
+  // arrastar numa faixa seleciona um trecho (para cortar/apagar)
+  let drag = null;
+  const msAt = (lane, x) => {
+    const r = lane.getBoundingClientRect();
+    return Math.max(0, Math.min(1, (x - r.left) / r.width)) * looper.len;
+  };
+  host.addEventListener('pointerdown', e => {
+    const lane = e.target.closest('.lane');
+    if (!lane || !looper.len) return;
+    const ti = +lane.closest('.ltrack').dataset.i;
+    const a = msAt(lane, e.clientX);
+    drag = { lane, ti, a };
+    looper.range = null;
+    lane.setPointerCapture(e.pointerId);
+    renderLoops();
+  });
+  host.addEventListener('pointermove', e => {
+    if (!drag) return;
+    const b = msAt(drag.lane, e.clientX);
+    if (Math.abs(b - drag.a) < looper.len * .01) return;
+    looper.range = { ti: drag.ti, a: Math.min(drag.a, b), b: Math.max(drag.a, b), moved: true };
+    looper.sel = drag.ti;
+    renderLoops();
+  });
+  host.addEventListener('pointerup', () => { drag = null; });
   // cabeça de leitura
   const frame = () => {
     requestAnimationFrame(frame);
@@ -847,7 +899,7 @@ function drawLane(i) {
     if (looper.len && looper.playing) {
       const x = loopPos() / looper.len * 100 + '%';
       for (const r of rows) r.querySelector('.head').style.left = x;
-    } else if (looper.rec !== null && !looper.len) {
+    } else if (looper.rec !== null && !looper.len && !looper.waiting) {
       $('#loop-info').textContent = `gravando ${((now() - looper.start) / 1000).toFixed(1)}s · R fecha o loop`;
       if (Math.random() < .1) drawLane(looper.rec);
     }
@@ -856,6 +908,83 @@ function drawLane(i) {
   frame();
 })();
 
+// ---------- edição: notas viram blocos (início/fim) e voltam a eventos ----------
+function toBlocks(tr) {
+  const blocks = [];
+  tr.events.forEach((e, idx) => {
+    if (e.type === 'drum') blocks.push({ ...e, end: e.t });
+    if (e.type !== 'on') return;
+    const off = tr.events.find((o, j) => j > idx && o.type === 'off' && o.src === e.src);
+    blocks.push({ ...e, end: off ? off.t : looper.len });
+  });
+  return blocks;
+}
+function fromBlocks(blocks) {
+  const ev = [];
+  blocks.forEach((b, n) => {
+    if (b.type === 'drum') return ev.push({ type: 'drum', id: b.id, vel: b.vel, kit: b.kit, t: b.t, skip: 0 });
+    const src = 'e' + n; // origem única por nota editada
+    ev.push({ type: 'on', src, notes: b.notes, vel: b.vel, preset: b.preset, t: b.t, skip: 0 });
+    ev.push({ type: 'off', src, t: Math.max(b.t + 1, b.end), skip: 0 });
+  });
+  return ev.sort((x, y) => x.t - y.t);
+}
+function snapshot() {
+  looper.undo.push({ len: looper.len, events: looper.tracks.map(t => t.events.map(e => ({ ...e, key: undefined }))) });
+  if (looper.undo.length > 30) looper.undo.shift();
+}
+
+// mantém só o trecho: vira o novo tamanho de todos os loops
+function keepRange() {
+  const r = looper.range;
+  if (!r) return;
+  snapshot();
+  releaseLoop();
+  const len = r.b - r.a;
+  for (const tr of looper.tracks) {
+    tr.events = fromBlocks(toBlocks(tr)
+      .filter(b => b.type === 'drum' ? b.t >= r.a && b.t < r.b : b.end > r.a && b.t < r.b)
+      .map(b => ({ ...b, t: Math.max(0, b.t - r.a), end: Math.min(len - 1, b.end - r.a) })));
+  }
+  looper.len = len;
+  looper.range = null;
+  looper.start = now();
+  looper.last = -1;
+  looper.tracks.forEach((_, i) => drawLane(i));
+  renderLoops();
+  toast(icon('check') + `Loop cortado para ${(len / 1000).toFixed(2)}s`);
+}
+
+// apaga o trecho só da faixa selecionada; nota que entra no trecho é encurtada
+function cutRange() {
+  const r = looper.range;
+  if (!r) return;
+  snapshot();
+  releaseLoop(r.ti);
+  const tr = looper.tracks[r.ti];
+  tr.events = fromBlocks(toBlocks(tr)
+    .filter(b => !(b.t >= r.a && b.t < r.b))
+    .map(b => b.type !== 'drum' && b.t < r.a && b.end > r.a ? { ...b, end: r.a } : b));
+  looper.range = null;
+  drawLane(r.ti);
+  renderLoops();
+}
+
+function undoEdit() {
+  const u = looper.undo.pop();
+  if (!u) return;
+  releaseLoop();
+  looper.len = u.len;
+  looper.tracks.forEach((tr, i) => { tr.events = u.events[i]; drawLane(i); });
+  looper.range = null;
+  if (u.len && !looper.playing) loopPlay(true);
+  renderLoops();
+  toast(icon('undo') + 'Edição desfeita');
+}
+
+$('#e-keep').addEventListener('click', keepRange);
+$('#e-cut').addEventListener('click', cutRange);
+$('#e-undo').addEventListener('click', undoEdit);
 $('#t-play').addEventListener('click', () => loopPlay());
 $('#t-clear').addEventListener('click', clearAll);
 

@@ -16,7 +16,12 @@ Toca o teclado MIDI (feito pro AMW Master25 / "MIDI KeyBoard 25A") sem abrir DAW
   - **Bateria:** bumbo, caixa, chimbal, chimbal aberto, palmas, tom, cowbell, prato. Três kits: Acústico, 808 e Lo-fi.
   - **Acordes:** I–vii° + I oitava acima no tom e escala escolhidos (maior/menor). O acorde segura enquanto o pad está apertado.
   - **Funções:** oitava −/+, som anterior/próximo, sustain, gravar loop, próximo loop, tocar/parar
-- **4 loops em faixas:** o primeiro loop gravado define o tamanho. Os outros gravam no mesmo tamanho, e gravar numa faixa com notas sobrepõe. Cada faixa tem mudo, apagar e um mini piano-roll. Com o metrônomo ligado, o tamanho arredonda para compassos. Cada nota guarda o som/kit com que foi gravada: grave a bateria no Loop 1, o baixo no Loop 2 e o piano no Loop 3.
+- **4 loops em faixas:** o `R` (ou a bolinha da faixa) arma a gravação, e o primeiro loop só começa a contar na primeira nota ou pad. O primeiro loop gravado define o tamanho, e os outros gravam no mesmo tamanho; gravar numa faixa com notas sobrepõe. Cada faixa tem mudo, apagar e um mini piano-roll. Com o metrônomo ligado, o tamanho arredonda para compassos. Cada nota guarda o som/kit com que foi gravada.
+- **Editar loops:** arraste numa faixa para selecionar um trecho.
+  - **Manter só o trecho:** o trecho vira o loop inteiro, em todas as faixas.
+  - **Apagar trecho** (`Delete`): tira as notas do trecho só daquela faixa.
+  - **Desfazer** (`Ctrl+Z`): volta as edições, em vários níveis.
+  - `Esc` limpa a seleção.
 - **Mod wheel** = vibrato · **Pitch bend** = ±2 semitons · **CC64** = sustain · **CC7** = volume
 - Teclado na tela (clique/arraste), detecção de acorde, osciloscópio e monitor do último sinal MIDI
 

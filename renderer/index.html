@@ -75,6 +75,12 @@
         <h2><i data-icon="repeat"></i>Loops</h2>
         <span id="loop-info" class="muted small mono"></span>
         <span class="spacer"></span>
+        <div id="edit-tools" class="edit-tools hidden">
+          <span id="e-range" class="mono small"></span>
+          <button id="e-keep" class="small-btn" title="O trecho vira o loop inteiro (todas as faixas)"><i data-icon="scissors"></i>Manter só o trecho</button>
+          <button id="e-cut" class="small-btn" title="Apaga as notas do trecho nesta faixa (Delete)"><i data-icon="eraser"></i>Apagar trecho</button>
+          <button id="e-undo" class="small-btn ghost" title="Desfazer (Ctrl+Z)"><i data-icon="undo"></i>Desfazer</button>
+        </div>
         <button id="t-play" class="icon-btn" title="Tocar / parar todos (Enter)"><i data-icon="play"></i></button>
         <button id="t-metro" class="icon-btn" title="Metrônomo (M) — com ele ligado o loop fecha em compassos"><i data-icon="metronome"></i></button>
         <div class="stepper bpm" id="bpm" title="BPM"><button data-d="-5"><i data-icon="minus"></i></button><b></b><button data-d="5"><i data-icon="plus"></i></button></div>
@@ -91,7 +97,7 @@
       </div>
       <div id="keyboard"></div>
       <footer class="keys-foot">
-        <span class="muted">Teclado do PC: <kbd>A</kbd>–<kbd>Ç</kbd> notas · <kbd>Z</kbd>/<kbd>X</kbd> oitava · <kbd>1</kbd>–<kbd>8</kbd> pads · <kbd>↑</kbd>/<kbd>↓</kbd> som · <kbd>R</kbd> grava · <kbd>←</kbd>/<kbd>→</kbd> loop · <kbd>Enter</kbd> toca · <kbd>Espaço</kbd> parar tudo</span>
+        <span class="muted">Teclado do PC: <kbd>A</kbd>–<kbd>Ç</kbd> notas · <kbd>Z</kbd>/<kbd>X</kbd> oitava · <kbd>1</kbd>–<kbd>8</kbd> pads · <kbd>↑</kbd>/<kbd>↓</kbd> som · <kbd>R</kbd> grava · <kbd>←</kbd>/<kbd>→</kbd> loop · <kbd>Enter</kbd> toca · <kbd>Espaço</kbd> para tudo</span>
         <span class="spacer"></span>
         <button id="btn-reset-map" class="ghost small-btn" title="Esquece knobs e pads aprendidos"><i data-icon="undo"></i>Resetar mapeamento</button>
       </footer>
