@@ -16,7 +16,9 @@ Toca o teclado MIDI (feito pro AMW Master25 / "MIDI KeyBoard 25A") sem abrir DAW
   - **Bateria:** bumbo, caixa, chimbal, chimbal aberto, palmas, tom, cowbell, prato. Três kits: Acústico, 808 e Lo-fi.
   - **Acordes:** I–vii° + I oitava acima no tom e escala escolhidos (maior/menor). O acorde segura enquanto o pad está apertado.
   - **Funções:** oitava −/+, som anterior/próximo, sustain, gravar loop, próximo loop, tocar/parar
-- **4 loops em faixas:** o `R` (ou a bolinha da faixa) arma a gravação, e o primeiro loop só começa a contar na primeira nota ou pad. O primeiro loop gravado define o tamanho, e os outros gravam no mesmo tamanho; gravar numa faixa com notas sobrepõe. Cada faixa tem mudo, apagar e um mini piano-roll. Com o metrônomo ligado, o tamanho arredonda para compassos. Cada nota guarda o som/kit com que foi gravada.
+- **Loops em faixas (até 12):** o `R` (ou a bolinha da faixa) arma a gravação, e o primeiro loop só começa a contar na primeira nota ou pad. O primeiro loop gravado define o tamanho, e os outros gravam no mesmo tamanho; gravar numa faixa com notas sobrepõe. Cada faixa tem mudo, apagar e um mini piano-roll. Com o metrônomo ligado, o tamanho arredonda para compassos. Cada nota guarda o som/kit com que foi gravada.
+- **Faixas:** **+ Faixa** adiciona e o **×** remove (`Ctrl+Z` desfaz). Cada faixa tem volume próprio, e duplo clique no nome renomeia. A borracha esvazia a faixa.
+- **Mixes:** `Ctrl+S` salva (na primeira vez pede o nome). O botão com o nome do mix abre a lista para abrir, excluir (vai pra Lixeira) ou começar um novo. Um mix guarda as faixas, os volumes, o BPM, o som, o kit e os knobs. Ficam em `%APPDATA%\Overtone\mixes\*.json`, e **Abrir pasta** mostra onde.
 - **Editar loops:** arraste numa faixa para selecionar um trecho.
   - **Manter só o trecho:** o trecho vira o loop inteiro, em todas as faixas.
   - **Apagar trecho** (`Delete`): tira as notas do trecho só daquela faixa.

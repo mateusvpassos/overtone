@@ -75,6 +75,9 @@
     <section id="loops" class="panel">
       <div class="panel-head">
         <h2><i data-icon="repeat"></i>Loops</h2>
+        <button id="btn-mixes" class="mix-pill" title="Mixes salvos"><i data-icon="folder"></i><span id="mix-name"></span></button>
+        <button id="btn-save" class="icon-btn ghost" title="Salvar mix (Ctrl+S)"><i data-icon="save"></i></button>
+        <button id="t-add" class="ghost small-btn" title="Adicionar faixa"><i data-icon="plus"></i>Faixa</button>
         <span id="loop-info" class="muted small mono"></span>
         <span class="spacer"></span>
         <div id="edit-tools" class="edit-tools hidden">
@@ -111,6 +114,19 @@
     <span id="wiz-text"></span>
     <button id="wiz-skip" class="small-btn">Pular</button>
     <button id="wiz-cancel" class="small-btn ghost">Cancelar</button>
+  </div>
+  <div id="mix-modal" class="hidden">
+    <div class="modal panel">
+      <div class="panel-head"><h2><i data-icon="folder"></i>Mixes</h2><span class="spacer"></span>
+        <button id="mix-folder" class="ghost small-btn" title="Abre a pasta dos arquivos"><i data-icon="folder"></i>Abrir pasta</button>
+        <button id="mix-close" class="icon-btn ghost"><i data-icon="x"></i></button></div>
+      <div class="mix-save-row">
+        <input id="mix-input" type="text" maxlength="60" placeholder="Nome do mix" spellcheck="false" autocomplete="off">
+        <button id="mix-save" class="primary-btn"><i data-icon="save"></i>Salvar</button>
+        <button id="mix-new" class="ghost" title="Começa um mix vazio"><i data-icon="plus"></i>Novo</button>
+      </div>
+      <div id="mix-list"></div>
+    </div>
   </div>
   <div id="toasts"></div>
   <script src="app.js"></script>

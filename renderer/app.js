@@ -49,9 +49,9 @@ let sustained = [];
 let sustainPedal = false;
 const sustainOn = () => S.sustain || sustainPedal;
 
-function startNotes(src, notes, vel, preset = S.preset, record = true) {
+function startNotes(src, notes, vel, preset = S.preset, record = true, bus) {
   stopSrc(src, false);
-  const handles = notes.map(n => Engine.noteOn(n, vel, preset));
+  const handles = notes.map(n => Engine.noteOn(n, vel, preset, bus));
   held.set(src, { notes, handles });
   if (record) loopRecord({ type: 'on', src, notes, vel, preset });
   showNotes();
@@ -395,10 +395,11 @@ function detectChord(notes) {
 // ---------- teclado do PC ----------
 const PC_KEYS = { KeyA: 0, KeyW: 1, KeyS: 2, KeyE: 3, KeyD: 4, KeyF: 5, KeyT: 6, KeyG: 7, KeyY: 8, KeyH: 9, KeyU: 10, KeyJ: 11, KeyK: 12, KeyO: 13, KeyL: 14, KeyP: 15, Semicolon: 16 };
 window.addEventListener('keydown', e => {
+  if (e.target.tagName === 'INPUT' && e.target.type !== 'range') return;
   if (e.ctrlKey && e.code === 'KeyZ') return undoEdit();
   if (e.code === 'Delete' && looper.range) return cutRange();
   if (e.code === 'Escape' && looper.range) { looper.range = null; return renderLoops(); }
-  if (e.target.tagName === 'SELECT' || e.ctrlKey || e.altKey || e.metaKey) return;
+  if (e.target.tagName === 'SELECT' || e.target.tagName === 'INPUT' || e.ctrlKey || e.altKey || e.metaKey) return;
   if (e.repeat) { if (e.code in PC_KEYS || /^Digit[1-8]$/.test(e.code) || e.code === 'Space') e.preventDefault(); return; }
   Engine.resume();
   if (e.code in PC_KEYS) return startNotes('pc' + e.code, [playNote(48 + PC_KEYS[e.code])], 100);
@@ -649,10 +650,17 @@ $('#bpm').addEventListener('click', e => {
 // ---------- loops (várias faixas) ----------
 // O primeiro loop gravado define o tamanho; os outros gravam por cima, no mesmo tamanho.
 // Gravar numa faixa que já tem notas sobrepõe. Cada nota guarda o som/kit com que foi gravada.
-const LOOP_COLORS = ['#22c3e6', '#ff9f6e', '#c084fc', '#3ddc97'];
+const LOOP_COLORS = ['#22c3e6', '#ff9f6e', '#c084fc', '#3ddc97', '#fbbf24', '#f472b6', '#a3e635', '#6f8bff'];
+let trackSeq = 0;
+function newTrack(o = {}) {
+  const id = o.id || ++trackSeq;
+  trackSeq = Math.max(trackSeq, id);
+  const vol = o.vol ?? .8;
+  return { id, c: o.c || LOOP_COLORS[(id - 1) % LOOP_COLORS.length], name: o.name || 'Loop ' + id, events: o.events || [], mute: !!o.mute, vol, bus: Engine.bus(vol ** 1.5) };
+}
 const looper = {
   len: 0, start: 0, last: 0, playing: false, rec: null, waiting: false, sel: 0, timer: null, range: null, undo: [],
-  tracks: LOOP_COLORS.map((c, i) => ({ c, name: 'Loop ' + (i + 1), events: [], mute: false }))
+  tracks: Array.from({ length: 4 }, () => newTrack())
 };
 const now = () => performance.now();
 const loopPos = () => looper.len ? (now() - looper.start) % looper.len : now() - looper.start;
@@ -672,6 +680,7 @@ function loopRecord(ev) {
   tr.events.push({ ...ev, t: loopPos(), skip: looper.len ? now() + looper.len - 30 : 0 });
   tr.events.sort((a, b) => a.t - b.t);
   drawLane(looper.rec);
+  markDirty();
 }
 
 function loopRec(i = looper.sel) {
@@ -740,7 +749,7 @@ function loopPlay(on = !looper.playing) {
 }
 
 function releaseLoop(ti) {
-  const pre = ti === undefined ? 'L' : `L${ti}:`;
+  const pre = ti === undefined ? 'L' : `L${looper.tracks[ti].id}:`;
   for (const k of [...held.keys()]) if (k.startsWith(pre)) stopSrc(k, false);
 }
 
@@ -752,6 +761,7 @@ function selectTrack(i) {
 function toggleMute(i) {
   const tr = looper.tracks[i];
   tr.mute = !tr.mute;
+  markDirty();
   if (tr.mute) releaseLoop(i);
   renderLoops();
 }
@@ -794,10 +804,10 @@ function loopTick() {
     if (tr.mute) return;
     for (const ev of tr.events) {
       if (ev.t <= a || ev.t > b || ev.skip > now()) continue;
-      if (ev.type === 'drum') Engine.drum(ev.id, ev.vel, 0, ev.kit);
+      if (ev.type === 'drum') Engine.drum(ev.id, ev.vel, 0, ev.kit, tr.bus);
       else if (ev.type === 'on') {
-        ev.key = `L${ti}:${ev.src}:${ev.t}`;
-        startNotes(ev.key, ev.notes, ev.vel, ev.preset, false);
+        ev.key = `L${tr.id}:${ev.src}:${ev.t}`;
+        startNotes(ev.key, ev.notes, ev.vel, ev.preset, false, tr.bus);
       } else offFor(tr, ev);
     }
   });
@@ -816,15 +826,17 @@ function offFor(tr, ev) {
 // ---------- faixas na tela ----------
 function renderLoops() {
   const host = $('#loop-tracks');
-  if (!host.children.length) {
+  if (host.children.length !== looper.tracks.length) {
     host.innerHTML = looper.tracks.map((tr, i) => `
       <div class="ltrack" data-i="${i}" style="--c:${tr.c}">
-        <span class="l-name"><span class="l-dot"></span>${tr.name}</span>
+        <span class="l-name" title="Duplo clique renomeia"><span class="l-dot"></span>${escapeHtml(tr.name)}</span>
         <button class="icon-btn l-rec" title="Gravar nesta faixa (R)">${icon('record')}</button>
         <button class="icon-btn l-mute" title="Mudo"></button>
+        <input type="range" class="l-vol" min="0" max="1" step="0.01" value="${tr.vol}" title="Volume da faixa">
         <div class="lane" title="Arraste para selecionar um trecho (cortar / apagar)"><div class="marks"></div><span class="lsel"></span><span class="head"></span><em class="l-empty"></em></div>
         <span class="l-count mono"></span>
-        <button class="icon-btn ghost l-clear" title="Apagar esta faixa">${icon('trash')}</button>
+        <button class="icon-btn ghost l-clear" title="Esvaziar a faixa (apaga as notas)">${icon('eraser')}</button>
+        <button class="icon-btn ghost l-del" title="Remover a faixa">${icon('x')}</button>
       </div>`).join('');
     looper.tracks.forEach((_, i) => drawLane(i));
   }
@@ -834,6 +846,7 @@ function renderLoops() {
     row.classList.toggle('sel', i === looper.sel);
     row.classList.toggle('rec', i === looper.rec);
     row.classList.toggle('muted', tr.mute);
+    row.querySelector('.l-vol').style.setProperty('--v', tr.vol * 100 + '%');
     row.querySelector('.l-mute').innerHTML = icon(tr.mute ? 'mute' : 'volume');
     row.querySelector('.l-count').textContent = n || '';
     row.querySelector('.l-empty').textContent = n ? '' : i === looper.rec ? (looper.waiting ? 'armado · começa na primeira nota' : 'gravando…') : looper.len ? 'vazio · grava por cima no mesmo tamanho' : i === looper.sel ? 'vazio · R grava e define o tamanho' : 'vazio';
@@ -898,6 +911,8 @@ function drawLane(i) {
     if (e.target.closest('.l-rec')) return loopRec(i);
     if (e.target.closest('.l-mute')) return toggleMute(i);
     if (e.target.closest('.l-clear')) return clearTrack(i);
+    if (e.target.closest('.l-del')) return removeTrack(i);
+    if (e.target.closest('.l-vol, .l-input')) return;
     if (e.target.closest('.lane') && looper.range?.moved) return;
     selectTrack(i);
   });
@@ -907,6 +922,18 @@ function drawLane(i) {
     const r = lane.getBoundingClientRect();
     return Math.max(0, Math.min(1, (x - r.left) / r.width)) * looper.len;
   };
+  host.addEventListener('dblclick', e => {
+    const name = e.target.closest('.l-name');
+    if (name) renameTrack(+name.closest('.ltrack').dataset.i);
+  });
+  host.addEventListener('input', e => {
+    if (!e.target.classList.contains('l-vol')) return;
+    const tr = looper.tracks[+e.target.closest('.ltrack').dataset.i];
+    tr.vol = +e.target.value;
+    tr.bus.set(tr.vol ** 1.5);
+    e.target.style.setProperty('--v', tr.vol * 100 + '%');
+    markDirty();
+  });
   host.addEventListener('pointerdown', e => {
     const lane = e.target.closest('.lane');
     if (!lane || !looper.len) return;
@@ -963,8 +990,10 @@ function fromBlocks(blocks) {
   });
   return ev.sort((x, y) => x.t - y.t);
 }
+const trackData = t => ({ id: t.id, name: t.name, c: t.c, vol: t.vol, mute: t.mute, events: t.events.map(e => ({ ...e, key: undefined })) });
 function snapshot() {
-  looper.undo.push({ len: looper.len, events: looper.tracks.map(t => t.events.map(e => ({ ...e, key: undefined }))) });
+  markDirty();
+  looper.undo.push({ len: looper.len, tracks: looper.tracks.map(trackData) });
   if (looper.undo.length > 30) looper.undo.shift();
 }
 
@@ -1009,18 +1038,207 @@ function undoEdit() {
   if (!u) return;
   releaseLoop();
   looper.len = u.len;
-  looper.tracks.forEach((tr, i) => { tr.events = u.events[i]; drawLane(i); });
+  setTracks(u.tracks);
   looper.range = null;
   if (u.len && !looper.playing) loopPlay(true);
   renderLoops();
   toast(icon('undo') + 'Edição desfeita');
 }
 
+// troca a lista de faixas reaproveitando o canal de áudio das que continuam
+function setTracks(list) {
+  const old = new Map(looper.tracks.map(t => [t.id, t]));
+  looper.tracks = list.map(d => {
+    const t = old.get(d.id);
+    if (!t) return newTrack(d);
+    Object.assign(t, d);
+    t.bus.set(t.vol ** 1.5);
+    old.delete(d.id);
+    return t;
+  });
+  for (const t of old.values()) for (const g of [t.bus.synth, t.bus.drum, t.bus.lofi]) setTimeout(() => g.disconnect(), 3000);
+  looper.sel = Math.min(looper.sel, looper.tracks.length - 1);
+  $('#loop-tracks').innerHTML = '';
+  renderLoops();
+}
+
+function addTrack() {
+  if (looper.tracks.length >= 12) return toast(icon('repeat') + 'Máximo de 12 faixas');
+  snapshot();
+  setTracks([...looper.tracks.map(trackData), trackData(newTrack())]);
+  looper.sel = looper.tracks.length - 1;
+  renderLoops();
+  $('#loop-tracks').lastElementChild?.scrollIntoView({ block: 'nearest' });
+}
+
+function removeTrack(i) {
+  if (looper.tracks.length <= 1) return clearTrack(i);
+  snapshot();
+  if (looper.rec !== null) endRec();
+  releaseLoop();
+  const name = looper.tracks[i].name;
+  setTracks(looper.tracks.filter((_, j) => j !== i).map(trackData));
+  if (looper.tracks.every(t => !t.events.length)) resetLooper();
+  renderLoops();
+  toast(icon('trash') + `${name} removido · Ctrl+Z desfaz`);
+}
+
+function renameTrack(i) {
+  const el = $('#loop-tracks').children[i].querySelector('.l-name');
+  const tr = looper.tracks[i];
+  el.innerHTML = `<input class="l-input" maxlength="20" value="${tr.name.replace(/"/g, '&quot;')}">`;
+  const inp = el.querySelector('input');
+  inp.focus();
+  inp.select();
+  const done = ok => {
+    if (ok && inp.value.trim() && inp.value.trim() !== tr.name) { tr.name = inp.value.trim(); markDirty(); }
+    el.innerHTML = `<span class="l-dot"></span>${escapeHtml(tr.name)}`;
+    renderLoops();
+  };
+  inp.addEventListener('keydown', e => { e.stopPropagation(); if (e.key === 'Enter') done(true); if (e.key === 'Escape') done(false); });
+  inp.addEventListener('blur', () => done(true), { once: true });
+}
+const escapeHtml = t => t.replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
+
+$('#t-add').addEventListener('click', addTrack);
 $('#e-keep').addEventListener('click', keepRange);
 $('#e-cut').addEventListener('click', cutRange);
 $('#e-undo').addEventListener('click', undoEdit);
 $('#t-play').addEventListener('click', () => loopPlay());
 $('#t-clear').addEventListener('click', clearAll);
+
+// ---------- mixes salvos (arquivos .json em %APPDATA%\Overtone\mixes) ----------
+const mix = { name: '', file: null, dirty: false };
+
+function markDirty() {
+  if (mix.dirty) return;
+  mix.dirty = true;
+  renderMixName();
+}
+function renderMixName() {
+  $('#mix-name').textContent = (mix.name || 'Mix sem nome') + (mix.dirty ? ' •' : '');
+  $('#btn-mixes').classList.toggle('dirty', mix.dirty);
+}
+
+function mixData() {
+  return {
+    version: 1, bpm: S.bpm, len: looper.len,
+    tracks: looper.tracks.map(t => {
+      const d = trackData(t);
+      delete d.id;
+      d.events.forEach(e => { delete e.key; delete e.skip; });
+      return d;
+    }),
+    sound: { preset: S.preset, kit: S.kit, knobs: S.knobs, padMode: S.padMode, key: S.key, scale: S.scale }
+  };
+}
+
+async function saveMix(name = mix.name) {
+  name = (name || '').trim();
+  if (!name) return openMixes(true);
+  if (looper.rec !== null) endRec();
+  mix.file = await window.api.saveMix(name, mixData());
+  mix.name = name;
+  mix.dirty = false;
+  renderMixName();
+  toast(icon('check') + `Mix "${escapeHtml(name)}" salvo`);
+  if (!$('#mix-modal').classList.contains('hidden')) renderMixList();
+}
+
+async function loadMix(file) {
+  if (mix.dirty && !confirmLose()) return;
+  const d = await window.api.loadMix(file);
+  loopPlay(false);
+  releaseLoop();
+  S.bpm = d.bpm || 100;
+  Engine.setBpm(S.bpm);
+  const so = d.sound || {};
+  if (so.knobs) so.knobs.forEach((v, i) => setKnob(i, v));
+  if (so.kit) { S.kit = so.kit; Engine.setKit(S.kit); }
+  Object.assign(S, { padMode: so.padMode || S.padMode, key: so.key ?? S.key, scale: so.scale || S.scale });
+  $('#key').value = S.key;
+  if (so.preset) setPreset(so.preset);
+  resetLooper();
+  looper.undo = [];
+  setTracks((d.tracks || []).map(t => ({ ...t, events: (t.events || []).map(e => ({ ...e, skip: 0 })) })));
+  looper.len = d.len || 0;
+  looper.tracks.forEach((_, i) => drawLane(i));
+  Object.assign(mix, { name: d.name, file, dirty: false });
+  renderMixName();
+  renderSteppers();
+  renderPads();
+  renderLoops();
+  closeMixes();
+  save();
+  toast(icon('play') + `"${escapeHtml(d.name)}" aberto · Enter toca`);
+}
+
+function newMix() {
+  if (mix.dirty && !confirmLose()) return;
+  loopPlay(false);
+  releaseLoop();
+  resetLooper();
+  looper.undo = [];
+  setTracks(Array.from({ length: 4 }, () => trackData(newTrack())));
+  Object.assign(mix, { name: '', file: null, dirty: false });
+  renderMixName();
+  closeMixes();
+}
+
+// o mix atual não salvo só é descartado com um segundo clique
+let loseArmed = 0;
+function confirmLose() {
+  if (Date.now() - loseArmed < 4000) { loseArmed = 0; return true; }
+  loseArmed = Date.now();
+  toast(icon('repeat') + 'O mix atual não foi salvo — clique de novo para descartar');
+  return false;
+}
+
+async function renderMixList() {
+  const list = await window.api.mixes();
+  $('#mix-list').innerHTML = list.length ? list.map(m => `
+    <div class="mix-item ${m.file === mix.file ? 'on' : ''}" data-file="${escapeHtml(m.file)}">
+      <div><b>${escapeHtml(m.name)}</b>
+        <span class="muted small">${m.saved ? new Date(m.saved).toLocaleString('pt-BR', { day: '2-digit', month: '2-digit', hour: '2-digit', minute: '2-digit' }) : ''} · ${m.tracks} ${m.tracks === 1 ? 'faixa' : 'faixas'} · ${((m.len || 0) / 1000).toFixed(1)}s · ${m.bpm || '?'} bpm</span></div>
+      <button class="small-btn m-open">${icon('play')}Abrir</button>
+      <button class="icon-btn ghost m-del" title="Mandar para a Lixeira">${icon('trash')}</button>
+    </div>`).join('') : '<div class="muted small mix-empty">Nenhum mix salvo ainda.</div>';
+}
+
+function openMixes(focusName) {
+  $('#mix-modal').classList.remove('hidden');
+  $('#mix-input').value = mix.name;
+  renderMixList();
+  if (focusName) setTimeout(() => $('#mix-input').focus(), 30);
+}
+function closeMixes() { $('#mix-modal').classList.add('hidden'); }
+
+$('#btn-save').addEventListener('click', () => saveMix());
+$('#btn-mixes').addEventListener('click', () => openMixes(false));
+$('#mix-close').addEventListener('click', closeMixes);
+$('#mix-modal').addEventListener('pointerdown', e => { if (e.target.id === 'mix-modal') closeMixes(); });
+$('#mix-save').addEventListener('click', () => saveMix($('#mix-input').value));
+$('#mix-new').addEventListener('click', newMix);
+$('#mix-folder').addEventListener('click', () => window.api.openMixFolder());
+$('#mix-input').addEventListener('keydown', e => {
+  e.stopPropagation();
+  if (e.key === 'Enter') saveMix(e.target.value);
+  if (e.key === 'Escape') closeMixes();
+});
+$('#mix-list').addEventListener('click', async e => {
+  const item = e.target.closest('.mix-item');
+  if (!item) return;
+  if (e.target.closest('.m-open')) return loadMix(item.dataset.file);
+  if (e.target.closest('.m-del')) {
+    await window.api.deleteMix(item.dataset.file);
+    if (mix.file === item.dataset.file) { mix.file = null; markDirty(); }
+    toast(icon('trash') + 'Mix mandado para a Lixeira');
+    renderMixList();
+  }
+});
+window.addEventListener('keydown', e => {
+  if (e.ctrlKey && e.code === 'KeyS') { e.preventDefault(); saveMix(); }
+}, true);
 
 // ---------- osciloscópio ----------
 (() => {
@@ -1074,5 +1292,6 @@ renderSteppers();
 renderPads();
 Engine.setKit(S.kit);
 renderLoops();
+renderMixName();
 initMidi();
 document.addEventListener('pointerdown', () => Engine.resume(), { once: true });

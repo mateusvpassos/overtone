@@ -201,7 +201,7 @@ const Engine = (() => {
   const voices = new Set();
   let currentPreset = PRESETS[0];
 
-  function noteOn(note, vel = 100, presetId) {
+  function noteOn(note, vel = 100, presetId, bus) {
     if (ctx.state !== 'running') ctx.resume();
     const P = PRESETS.find(x => x.id === presetId) || currentPreset;
     if (voices.size >= 32) kill([...voices][0]);
@@ -222,7 +222,7 @@ const Engine = (() => {
 
     const amp = ctx.createGain();
     amp.gain.value = 0;
-    filt.connect(amp).connect(synthBus);
+    filt.connect(amp).connect(bus ? bus.synth : synthBus);
 
     let mod = null;
     if (P.fm) {
@@ -355,12 +355,12 @@ const Engine = (() => {
 
   let currentKit = 'acustico';
 
-  function drum(id, vel = 110, when = 0, kit = currentKit) {
+  function drum(id, vel = 110, when = 0, kit = currentKit, bus) {
     if (ctx.state !== 'running') ctx.resume();
     const t = Math.max(ctx.currentTime, when);
     const out = ctx.createGain();
     out.gain.value = (vel / 127) ** 1.2;
-    out.connect(kit === 'lofi' && id !== 'click' ? lofiIn : drumBus);
+    out.connect(kit === 'lofi' && id !== 'click' ? (bus ? bus.lofi : lofiIn) : bus ? bus.drum : drumBus);
     if (kit === '808') {
       const done = {
         kick: () => tone(t, 'sine', 125, 48, .07, 1.1, 1.1, out),
@@ -434,6 +434,13 @@ const Engine = (() => {
     set(name, val) { p[name] = val; apply(); },
     setBpm(b) { bpm = b; apply(); },
     setKit(k) { currentKit = k; },
+    // canal de volume de uma faixa de loop (síntese, bateria e bateria lo-fi passam por ele)
+    bus(vol = 1) {
+      const mk = dest => { const g = ctx.createGain(); g.gain.value = vol; g.connect(dest); return g; };
+      const b = { synth: mk(synthBus), drum: mk(drumBus), lofi: mk(lofiIn) };
+      b.set = v => { for (const g of [b.synth, b.drum, b.lofi]) g.gain.setTargetAtTime(v, ctx.currentTime, .02); };
+      return b;
+    },
     setPreset(id) { currentPreset = PRESETS.find(x => x.id === id) || PRESETS[0]; currentVib = currentPreset.vib; setWheel(wheel); },
     noteOn, noteOff, panic, drum, setBend, setWheel,
     resume: () => ctx.state !== 'running' && ctx.resume()
