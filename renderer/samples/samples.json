@@ -1,216 +1,4 @@
 {
- "piano": [
-  {
-   "note": 24,
-   "layer": "hard",
-   "file": "piano/24_hard.ogg"
-  },
-  {
-   "note": 24,
-   "layer": "soft",
-   "file": "piano/24_soft.ogg"
-  },
-  {
-   "note": 28,
-   "layer": "hard",
-   "file": "piano/28_hard.ogg"
-  },
-  {
-   "note": 28,
-   "layer": "soft",
-   "file": "piano/28_soft.ogg"
-  },
-  {
-   "note": 32,
-   "layer": "hard",
-   "file": "piano/32_hard.ogg"
-  },
-  {
-   "note": 32,
-   "layer": "soft",
-   "file": "piano/32_soft.ogg"
-  },
-  {
-   "note": 36,
-   "layer": "hard",
-   "file": "piano/36_hard.ogg"
-  },
-  {
-   "note": 36,
-   "layer": "soft",
-   "file": "piano/36_soft.ogg"
-  },
-  {
-   "note": 40,
-   "layer": "hard",
-   "file": "piano/40_hard.ogg"
-  },
-  {
-   "note": 40,
-   "layer": "soft",
-   "file": "piano/40_soft.ogg"
-  },
-  {
-   "note": 44,
-   "layer": "hard",
-   "file": "piano/44_hard.ogg"
-  },
-  {
-   "note": 44,
-   "layer": "soft",
-   "file": "piano/44_soft.ogg"
-  },
-  {
-   "note": 48,
-   "layer": "hard",
-   "file": "piano/48_hard.ogg"
-  },
-  {
-   "note": 48,
-   "layer": "soft",
-   "file": "piano/48_soft.ogg"
-  },
-  {
-   "note": 52,
-   "layer": "hard",
-   "file": "piano/52_hard.ogg"
-  },
-  {
-   "note": 52,
-   "layer": "soft",
-   "file": "piano/52_soft.ogg"
-  },
-  {
-   "note": 56,
-   "layer": "hard",
-   "file": "piano/56_hard.ogg"
-  },
-  {
-   "note": 56,
-   "layer": "soft",
-   "file": "piano/56_soft.ogg"
-  },
-  {
-   "note": 60,
-   "layer": "hard",
-   "file": "piano/60_hard.ogg"
-  },
-  {
-   "note": 60,
-   "layer": "soft",
-   "file": "piano/60_soft.ogg"
-  },
-  {
-   "note": 64,
-   "layer": "hard",
-   "file": "piano/64_hard.ogg"
-  },
-  {
-   "note": 64,
-   "layer": "soft",
-   "file": "piano/64_soft.ogg"
-  },
-  {
-   "note": 68,
-   "layer": "hard",
-   "file": "piano/68_hard.ogg"
-  },
-  {
-   "note": 68,
-   "layer": "soft",
-   "file": "piano/68_soft.ogg"
-  },
-  {
-   "note": 72,
-   "layer": "hard",
-   "file": "piano/72_hard.ogg"
-  },
-  {
-   "note": 72,
-   "layer": "soft",
-   "file": "piano/72_soft.ogg"
-  },
-  {
-   "note": 76,
-   "layer": "hard",
-   "file": "piano/76_hard.ogg"
-  },
-  {
-   "note": 76,
-   "layer": "soft",
-   "file": "piano/76_soft.ogg"
-  },
-  {
-   "note": 80,
-   "layer": "hard",
-   "file": "piano/80_hard.ogg"
-  },
-  {
-   "note": 80,
-   "layer": "soft",
-   "file": "piano/80_soft.ogg"
-  },
-  {
-   "note": 84,
-   "layer": "hard",
-   "file": "piano/84_hard.ogg"
-  },
-  {
-   "note": 84,
-   "layer": "soft",
-   "file": "piano/84_soft.ogg"
-  },
-  {
-   "note": 88,
-   "layer": "hard",
-   "file": "piano/88_hard.ogg"
-  },
-  {
-   "note": 88,
-   "layer": "soft",
-   "file": "piano/88_soft.ogg"
-  },
-  {
-   "note": 92,
-   "layer": "hard",
-   "file": "piano/92_hard.ogg"
-  },
-  {
-   "note": 92,
-   "layer": "soft",
-   "file": "piano/92_soft.ogg"
-  },
-  {
-   "note": 96,
-   "layer": "hard",
-   "file": "piano/96_hard.ogg"
-  },
-  {
-   "note": 96,
-   "layer": "soft",
-   "file": "piano/96_soft.ogg"
-  },
-  {
-   "note": 100,
-   "layer": "hard",
-   "file": "piano/100_hard.ogg"
-  },
-  {
-   "note": 100,
-   "layer": "soft",
-   "file": "piano/100_soft.ogg"
-  },
-  {
-   "note": 104,
-   "layer": "hard",
-   "file": "piano/104_hard.ogg"
-  },
-  {
-   "note": 104,
-   "layer": "soft",
-   "file": "piano/104_soft.ogg"
-  }
- ],
  "drums": {
   "kick": [
    "drums/kick_1.ogg",
@@ -240,7 +28,1135 @@
   ],
   "crash": [
    "drums/crash_1.ogg"
+  ],
+  "tom2": [
+   "drums/tom2_1.ogg"
+  ],
+  "ride": [
+   "drums/ride_1.ogg"
+  ],
+  "ridebell": [
+   "drums/ridebell_1.ogg"
+  ],
+  "rim": [
+   "drums/rim_1.ogg",
+   "drums/rim_2.ogg"
+  ],
+  "ghost": [
+   "drums/ghost_1.ogg",
+   "drums/ghost_2.ogg"
+  ],
+  "pedalhat": [
+   "drums/pedalhat_1.ogg",
+   "drums/pedalhat_2.ogg"
+  ],
+  "shaker": [
+   "drums/shaker_1.ogg",
+   "drums/shaker_2.ogg"
+  ],
+  "tamb": [
+   "drums/tamb_1.ogg",
+   "drums/tamb_2.ogg"
+  ],
+  "conga": [
+   "drums/conga_1.ogg",
+   "drums/conga_2.ogg"
+  ],
+  "bongo": [
+   "drums/bongo_1.ogg",
+   "drums/bongo_2.ogg"
+  ],
+  "cajon": [
+   "drums/cajon_1.ogg",
+   "drums/cajon_2.ogg"
+  ],
+  "cajonslap": [
+   "drums/cajonslap_1.ogg",
+   "drums/cajonslap_2.ogg"
+  ],
+  "claves": [
+   "drums/claves_1.ogg"
+  ],
+  "woodblock": [
+   "drums/woodblock_1.ogg"
+  ],
+  "triangle": [
+   "drums/triangle_1.ogg"
   ]
  },
- "source": "VCSL \u2014 Versilian Community Sample Library (CC0 1.0), github.com/sgossner/VCSL"
+ "source": "VCSL (CC0 1.0, github.com/sgossner/VCSL) e FreePats violão/baixo (CC0 1.0, freepats.zenvoid.org)",
+ "instruments": {
+  "piano": [
+   {
+    "note": 24,
+    "layer": "hard",
+    "file": "piano/24_hard.ogg"
+   },
+   {
+    "note": 24,
+    "layer": "soft",
+    "file": "piano/24_soft.ogg"
+   },
+   {
+    "note": 28,
+    "layer": "hard",
+    "file": "piano/28_hard.ogg"
+   },
+   {
+    "note": 28,
+    "layer": "soft",
+    "file": "piano/28_soft.ogg"
+   },
+   {
+    "note": 32,
+    "layer": "hard",
+    "file": "piano/32_hard.ogg"
+   },
+   {
+    "note": 32,
+    "layer": "soft",
+    "file": "piano/32_soft.ogg"
+   },
+   {
+    "note": 36,
+    "layer": "hard",
+    "file": "piano/36_hard.ogg"
+   },
+   {
+    "note": 36,
+    "layer": "soft",
+    "file": "piano/36_soft.ogg"
+   },
+   {
+    "note": 40,
+    "layer": "hard",
+    "file": "piano/40_hard.ogg"
+   },
+   {
+    "note": 40,
+    "layer": "soft",
+    "file": "piano/40_soft.ogg"
+   },
+   {
+    "note": 44,
+    "layer": "hard",
+    "file": "piano/44_hard.ogg"
+   },
+   {
+    "note": 44,
+    "layer": "soft",
+    "file": "piano/44_soft.ogg"
+   },
+   {
+    "note": 48,
+    "layer": "hard",
+    "file": "piano/48_hard.ogg"
+   },
+   {
+    "note": 48,
+    "layer": "soft",
+    "file": "piano/48_soft.ogg"
+   },
+   {
+    "note": 52,
+    "layer": "hard",
+    "file": "piano/52_hard.ogg"
+   },
+   {
+    "note": 52,
+    "layer": "soft",
+    "file": "piano/52_soft.ogg"
+   },
+   {
+    "note": 56,
+    "layer": "hard",
+    "file": "piano/56_hard.ogg"
+   },
+   {
+    "note": 56,
+    "layer": "soft",
+    "file": "piano/56_soft.ogg"
+   },
+   {
+    "note": 60,
+    "layer": "hard",
+    "file": "piano/60_hard.ogg"
+   },
+   {
+    "note": 60,
+    "layer": "soft",
+    "file": "piano/60_soft.ogg"
+   },
+   {
+    "note": 64,
+    "layer": "hard",
+    "file": "piano/64_hard.ogg"
+   },
+   {
+    "note": 64,
+    "layer": "soft",
+    "file": "piano/64_soft.ogg"
+   },
+   {
+    "note": 68,
+    "layer": "hard",
+    "file": "piano/68_hard.ogg"
+   },
+   {
+    "note": 68,
+    "layer": "soft",
+    "file": "piano/68_soft.ogg"
+   },
+   {
+    "note": 72,
+    "layer": "hard",
+    "file": "piano/72_hard.ogg"
+   },
+   {
+    "note": 72,
+    "layer": "soft",
+    "file": "piano/72_soft.ogg"
+   },
+   {
+    "note": 76,
+    "layer": "hard",
+    "file": "piano/76_hard.ogg"
+   },
+   {
+    "note": 76,
+    "layer": "soft",
+    "file": "piano/76_soft.ogg"
+   },
+   {
+    "note": 80,
+    "layer": "hard",
+    "file": "piano/80_hard.ogg"
+   },
+   {
+    "note": 80,
+    "layer": "soft",
+    "file": "piano/80_soft.ogg"
+   },
+   {
+    "note": 84,
+    "layer": "hard",
+    "file": "piano/84_hard.ogg"
+   },
+   {
+    "note": 84,
+    "layer": "soft",
+    "file": "piano/84_soft.ogg"
+   },
+   {
+    "note": 88,
+    "layer": "hard",
+    "file": "piano/88_hard.ogg"
+   },
+   {
+    "note": 88,
+    "layer": "soft",
+    "file": "piano/88_soft.ogg"
+   },
+   {
+    "note": 92,
+    "layer": "hard",
+    "file": "piano/92_hard.ogg"
+   },
+   {
+    "note": 92,
+    "layer": "soft",
+    "file": "piano/92_soft.ogg"
+   },
+   {
+    "note": 96,
+    "layer": "hard",
+    "file": "piano/96_hard.ogg"
+   },
+   {
+    "note": 96,
+    "layer": "soft",
+    "file": "piano/96_soft.ogg"
+   },
+   {
+    "note": 100,
+    "layer": "hard",
+    "file": "piano/100_hard.ogg"
+   },
+   {
+    "note": 100,
+    "layer": "soft",
+    "file": "piano/100_soft.ogg"
+   },
+   {
+    "note": 104,
+    "layer": "hard",
+    "file": "piano/104_hard.ogg"
+   },
+   {
+    "note": 104,
+    "layer": "soft",
+    "file": "piano/104_soft.ogg"
+   }
+  ],
+  "vibes": [
+   {
+    "note": 41,
+    "layer": "hard",
+    "file": "vibes/41_hard.ogg"
+   },
+   {
+    "note": 41,
+    "layer": "soft",
+    "file": "vibes/41_soft.ogg"
+   },
+   {
+    "note": 45,
+    "layer": "hard",
+    "file": "vibes/45_hard.ogg"
+   },
+   {
+    "note": 45,
+    "layer": "soft",
+    "file": "vibes/45_soft.ogg"
+   },
+   {
+    "note": 48,
+    "layer": "hard",
+    "file": "vibes/48_hard.ogg"
+   },
+   {
+    "note": 48,
+    "layer": "soft",
+    "file": "vibes/48_soft.ogg"
+   },
+   {
+    "note": 52,
+    "layer": "hard",
+    "file": "vibes/52_hard.ogg"
+   },
+   {
+    "note": 52,
+    "layer": "soft",
+    "file": "vibes/52_soft.ogg"
+   },
+   {
+    "note": 55,
+    "layer": "hard",
+    "file": "vibes/55_hard.ogg"
+   },
+   {
+    "note": 55,
+    "layer": "soft",
+    "file": "vibes/55_soft.ogg"
+   },
+   {
+    "note": 59,
+    "layer": "hard",
+    "file": "vibes/59_hard.ogg"
+   },
+   {
+    "note": 59,
+    "layer": "soft",
+    "file": "vibes/59_soft.ogg"
+   },
+   {
+    "note": 62,
+    "layer": "hard",
+    "file": "vibes/62_hard.ogg"
+   },
+   {
+    "note": 62,
+    "layer": "soft",
+    "file": "vibes/62_soft.ogg"
+   },
+   {
+    "note": 65,
+    "layer": "hard",
+    "file": "vibes/65_hard.ogg"
+   },
+   {
+    "note": 65,
+    "layer": "soft",
+    "file": "vibes/65_soft.ogg"
+   },
+   {
+    "note": 69,
+    "layer": "hard",
+    "file": "vibes/69_hard.ogg"
+   },
+   {
+    "note": 69,
+    "layer": "soft",
+    "file": "vibes/69_soft.ogg"
+   },
+   {
+    "note": 72,
+    "layer": "hard",
+    "file": "vibes/72_hard.ogg"
+   },
+   {
+    "note": 72,
+    "layer": "soft",
+    "file": "vibes/72_soft.ogg"
+   },
+   {
+    "note": 76,
+    "layer": "hard",
+    "file": "vibes/76_hard.ogg"
+   },
+   {
+    "note": 76,
+    "layer": "soft",
+    "file": "vibes/76_soft.ogg"
+   }
+  ],
+  "harp": [
+   {
+    "note": 28,
+    "layer": "hard",
+    "file": "harp/28_hard.ogg"
+   },
+   {
+    "note": 31,
+    "layer": "hard",
+    "file": "harp/31_hard.ogg"
+   },
+   {
+    "note": 35,
+    "layer": "hard",
+    "file": "harp/35_hard.ogg"
+   },
+   {
+    "note": 35,
+    "layer": "soft",
+    "file": "harp/35_soft.ogg"
+   },
+   {
+    "note": 38,
+    "layer": "hard",
+    "file": "harp/38_hard.ogg"
+   },
+   {
+    "note": 38,
+    "layer": "soft",
+    "file": "harp/38_soft.ogg"
+   },
+   {
+    "note": 41,
+    "layer": "hard",
+    "file": "harp/41_hard.ogg"
+   },
+   {
+    "note": 41,
+    "layer": "soft",
+    "file": "harp/41_soft.ogg"
+   },
+   {
+    "note": 45,
+    "layer": "hard",
+    "file": "harp/45_hard.ogg"
+   },
+   {
+    "note": 45,
+    "layer": "soft",
+    "file": "harp/45_soft.ogg"
+   },
+   {
+    "note": 48,
+    "layer": "hard",
+    "file": "harp/48_hard.ogg"
+   },
+   {
+    "note": 48,
+    "layer": "soft",
+    "file": "harp/48_soft.ogg"
+   },
+   {
+    "note": 52,
+    "layer": "hard",
+    "file": "harp/52_hard.ogg"
+   },
+   {
+    "note": 52,
+    "layer": "soft",
+    "file": "harp/52_soft.ogg"
+   },
+   {
+    "note": 55,
+    "layer": "hard",
+    "file": "harp/55_hard.ogg"
+   },
+   {
+    "note": 55,
+    "layer": "soft",
+    "file": "harp/55_soft.ogg"
+   },
+   {
+    "note": 59,
+    "layer": "hard",
+    "file": "harp/59_hard.ogg"
+   },
+   {
+    "note": 59,
+    "layer": "soft",
+    "file": "harp/59_soft.ogg"
+   },
+   {
+    "note": 62,
+    "layer": "hard",
+    "file": "harp/62_hard.ogg"
+   },
+   {
+    "note": 62,
+    "layer": "soft",
+    "file": "harp/62_soft.ogg"
+   },
+   {
+    "note": 65,
+    "layer": "hard",
+    "file": "harp/65_hard.ogg"
+   },
+   {
+    "note": 65,
+    "layer": "soft",
+    "file": "harp/65_soft.ogg"
+   },
+   {
+    "note": 69,
+    "layer": "hard",
+    "file": "harp/69_hard.ogg"
+   },
+   {
+    "note": 69,
+    "layer": "soft",
+    "file": "harp/69_soft.ogg"
+   },
+   {
+    "note": 72,
+    "layer": "hard",
+    "file": "harp/72_hard.ogg"
+   },
+   {
+    "note": 72,
+    "layer": "soft",
+    "file": "harp/72_soft.ogg"
+   },
+   {
+    "note": 76,
+    "layer": "hard",
+    "file": "harp/76_hard.ogg"
+   },
+   {
+    "note": 76,
+    "layer": "soft",
+    "file": "harp/76_soft.ogg"
+   },
+   {
+    "note": 79,
+    "layer": "hard",
+    "file": "harp/79_hard.ogg"
+   },
+   {
+    "note": 79,
+    "layer": "soft",
+    "file": "harp/79_soft.ogg"
+   },
+   {
+    "note": 83,
+    "layer": "hard",
+    "file": "harp/83_hard.ogg"
+   },
+   {
+    "note": 83,
+    "layer": "soft",
+    "file": "harp/83_soft.ogg"
+   },
+   {
+    "note": 86,
+    "layer": "hard",
+    "file": "harp/86_hard.ogg"
+   },
+   {
+    "note": 86,
+    "layer": "soft",
+    "file": "harp/86_soft.ogg"
+   },
+   {
+    "note": 89,
+    "layer": "hard",
+    "file": "harp/89_hard.ogg"
+   },
+   {
+    "note": 89,
+    "layer": "soft",
+    "file": "harp/89_soft.ogg"
+   },
+   {
+    "note": 93,
+    "layer": "hard",
+    "file": "harp/93_hard.ogg"
+   },
+   {
+    "note": 93,
+    "layer": "soft",
+    "file": "harp/93_soft.ogg"
+   },
+   {
+    "note": 95,
+    "layer": "hard",
+    "file": "harp/95_hard.ogg"
+   },
+   {
+    "note": 95,
+    "layer": "soft",
+    "file": "harp/95_soft.ogg"
+   },
+   {
+    "note": 98,
+    "layer": "hard",
+    "file": "harp/98_hard.ogg"
+   },
+   {
+    "note": 101,
+    "layer": "hard",
+    "file": "harp/101_hard.ogg"
+   }
+  ],
+  "sax": [
+   {
+    "note": 32,
+    "layer": "hard",
+    "file": "sax/32_hard.ogg"
+   },
+   {
+    "note": 32,
+    "layer": "soft",
+    "file": "sax/32_soft.ogg"
+   },
+   {
+    "note": 34,
+    "layer": "hard",
+    "file": "sax/34_hard.ogg"
+   },
+   {
+    "note": 34,
+    "layer": "soft",
+    "file": "sax/34_soft.ogg"
+   },
+   {
+    "note": 36,
+    "layer": "hard",
+    "file": "sax/36_hard.ogg"
+   },
+   {
+    "note": 36,
+    "layer": "soft",
+    "file": "sax/36_soft.ogg"
+   },
+   {
+    "note": 38,
+    "layer": "hard",
+    "file": "sax/38_hard.ogg"
+   },
+   {
+    "note": 38,
+    "layer": "soft",
+    "file": "sax/38_soft.ogg"
+   },
+   {
+    "note": 40,
+    "layer": "hard",
+    "file": "sax/40_hard.ogg"
+   },
+   {
+    "note": 40,
+    "layer": "soft",
+    "file": "sax/40_soft.ogg"
+   },
+   {
+    "note": 42,
+    "layer": "hard",
+    "file": "sax/42_hard.ogg"
+   },
+   {
+    "note": 42,
+    "layer": "soft",
+    "file": "sax/42_soft.ogg"
+   },
+   {
+    "note": 44,
+    "layer": "hard",
+    "file": "sax/44_hard.ogg"
+   },
+   {
+    "note": 44,
+    "layer": "soft",
+    "file": "sax/44_soft.ogg"
+   },
+   {
+    "note": 46,
+    "layer": "hard",
+    "file": "sax/46_hard.ogg"
+   },
+   {
+    "note": 46,
+    "layer": "soft",
+    "file": "sax/46_soft.ogg"
+   },
+   {
+    "note": 48,
+    "layer": "hard",
+    "file": "sax/48_hard.ogg"
+   },
+   {
+    "note": 48,
+    "layer": "soft",
+    "file": "sax/48_soft.ogg"
+   },
+   {
+    "note": 50,
+    "layer": "hard",
+    "file": "sax/50_hard.ogg"
+   },
+   {
+    "note": 50,
+    "layer": "soft",
+    "file": "sax/50_soft.ogg"
+   },
+   {
+    "note": 52,
+    "layer": "hard",
+    "file": "sax/52_hard.ogg"
+   },
+   {
+    "note": 52,
+    "layer": "soft",
+    "file": "sax/52_soft.ogg"
+   },
+   {
+    "note": 54,
+    "layer": "hard",
+    "file": "sax/54_hard.ogg"
+   },
+   {
+    "note": 54,
+    "layer": "soft",
+    "file": "sax/54_soft.ogg"
+   },
+   {
+    "note": 56,
+    "layer": "hard",
+    "file": "sax/56_hard.ogg"
+   },
+   {
+    "note": 56,
+    "layer": "soft",
+    "file": "sax/56_soft.ogg"
+   },
+   {
+    "note": 58,
+    "layer": "hard",
+    "file": "sax/58_hard.ogg"
+   },
+   {
+    "note": 58,
+    "layer": "soft",
+    "file": "sax/58_soft.ogg"
+   },
+   {
+    "note": 60,
+    "layer": "hard",
+    "file": "sax/60_hard.ogg"
+   },
+   {
+    "note": 60,
+    "layer": "soft",
+    "file": "sax/60_soft.ogg"
+   },
+   {
+    "note": 62,
+    "layer": "hard",
+    "file": "sax/62_hard.ogg"
+   },
+   {
+    "note": 62,
+    "layer": "soft",
+    "file": "sax/62_soft.ogg"
+   },
+   {
+    "note": 64,
+    "layer": "hard",
+    "file": "sax/64_hard.ogg"
+   },
+   {
+    "note": 64,
+    "layer": "soft",
+    "file": "sax/64_soft.ogg"
+   },
+   {
+    "note": 66,
+    "layer": "hard",
+    "file": "sax/66_hard.ogg"
+   },
+   {
+    "note": 66,
+    "layer": "soft",
+    "file": "sax/66_soft.ogg"
+   },
+   {
+    "note": 68,
+    "layer": "hard",
+    "file": "sax/68_hard.ogg"
+   },
+   {
+    "note": 68,
+    "layer": "soft",
+    "file": "sax/68_soft.ogg"
+   },
+   {
+    "note": 70,
+    "layer": "hard",
+    "file": "sax/70_hard.ogg"
+   },
+   {
+    "note": 70,
+    "layer": "soft",
+    "file": "sax/70_soft.ogg"
+   },
+   {
+    "note": 72,
+    "layer": "hard",
+    "file": "sax/72_hard.ogg"
+   },
+   {
+    "note": 72,
+    "layer": "soft",
+    "file": "sax/72_soft.ogg"
+   },
+   {
+    "note": 74,
+    "layer": "hard",
+    "file": "sax/74_hard.ogg"
+   },
+   {
+    "note": 74,
+    "layer": "soft",
+    "file": "sax/74_soft.ogg"
+   },
+   {
+    "note": 76,
+    "layer": "hard",
+    "file": "sax/76_hard.ogg"
+   },
+   {
+    "note": 76,
+    "layer": "soft",
+    "file": "sax/76_soft.ogg"
+   }
+  ],
+  "guitar": [
+   {
+    "note": 31,
+    "layer": "hard",
+    "file": "guitar/31_hard.ogg"
+   },
+   {
+    "note": 32,
+    "layer": "hard",
+    "file": "guitar/32_hard.ogg"
+   },
+   {
+    "note": 33,
+    "layer": "hard",
+    "file": "guitar/33_hard.ogg"
+   },
+   {
+    "note": 34,
+    "layer": "hard",
+    "file": "guitar/34_hard.ogg"
+   },
+   {
+    "note": 35,
+    "layer": "hard",
+    "file": "guitar/35_hard.ogg"
+   },
+   {
+    "note": 36,
+    "layer": "hard",
+    "file": "guitar/36_hard.ogg"
+   },
+   {
+    "note": 37,
+    "layer": "hard",
+    "file": "guitar/37_hard.ogg"
+   },
+   {
+    "note": 38,
+    "layer": "hard",
+    "file": "guitar/38_hard.ogg"
+   },
+   {
+    "note": 39,
+    "layer": "hard",
+    "file": "guitar/39_hard.ogg"
+   },
+   {
+    "note": 40,
+    "layer": "hard",
+    "file": "guitar/40_hard.ogg"
+   },
+   {
+    "note": 41,
+    "layer": "hard",
+    "file": "guitar/41_hard.ogg"
+   },
+   {
+    "note": 43,
+    "layer": "hard",
+    "file": "guitar/43_hard.ogg"
+   },
+   {
+    "note": 45,
+    "layer": "hard",
+    "file": "guitar/45_hard.ogg"
+   },
+   {
+    "note": 47,
+    "layer": "hard",
+    "file": "guitar/47_hard.ogg"
+   },
+   {
+    "note": 48,
+    "layer": "hard",
+    "file": "guitar/48_hard.ogg"
+   },
+   {
+    "note": 50,
+    "layer": "hard",
+    "file": "guitar/50_hard.ogg"
+   },
+   {
+    "note": 52,
+    "layer": "hard",
+    "file": "guitar/52_hard.ogg"
+   },
+   {
+    "note": 53,
+    "layer": "hard",
+    "file": "guitar/53_hard.ogg"
+   },
+   {
+    "note": 54,
+    "layer": "hard",
+    "file": "guitar/54_hard.ogg"
+   },
+   {
+    "note": 55,
+    "layer": "hard",
+    "file": "guitar/55_hard.ogg"
+   },
+   {
+    "note": 56,
+    "layer": "hard",
+    "file": "guitar/56_hard.ogg"
+   },
+   {
+    "note": 57,
+    "layer": "hard",
+    "file": "guitar/57_hard.ogg"
+   },
+   {
+    "note": 58,
+    "layer": "hard",
+    "file": "guitar/58_hard.ogg"
+   },
+   {
+    "note": 59,
+    "layer": "hard",
+    "file": "guitar/59_hard.ogg"
+   },
+   {
+    "note": 60,
+    "layer": "hard",
+    "file": "guitar/60_hard.ogg"
+   },
+   {
+    "note": 61,
+    "layer": "hard",
+    "file": "guitar/61_hard.ogg"
+   },
+   {
+    "note": 62,
+    "layer": "hard",
+    "file": "guitar/62_hard.ogg"
+   },
+   {
+    "note": 63,
+    "layer": "hard",
+    "file": "guitar/63_hard.ogg"
+   },
+   {
+    "note": 64,
+    "layer": "hard",
+    "file": "guitar/64_hard.ogg"
+   },
+   {
+    "note": 65,
+    "layer": "hard",
+    "file": "guitar/65_hard.ogg"
+   },
+   {
+    "note": 66,
+    "layer": "hard",
+    "file": "guitar/66_hard.ogg"
+   },
+   {
+    "note": 67,
+    "layer": "hard",
+    "file": "guitar/67_hard.ogg"
+   },
+   {
+    "note": 69,
+    "layer": "hard",
+    "file": "guitar/69_hard.ogg"
+   },
+   {
+    "note": 70,
+    "layer": "hard",
+    "file": "guitar/70_hard.ogg"
+   },
+   {
+    "note": 71,
+    "layer": "hard",
+    "file": "guitar/71_hard.ogg"
+   },
+   {
+    "note": 72,
+    "layer": "hard",
+    "file": "guitar/72_hard.ogg"
+   },
+   {
+    "note": 73,
+    "layer": "hard",
+    "file": "guitar/73_hard.ogg"
+   },
+   {
+    "note": 74,
+    "layer": "hard",
+    "file": "guitar/74_hard.ogg"
+   },
+   {
+    "note": 75,
+    "layer": "hard",
+    "file": "guitar/75_hard.ogg"
+   },
+   {
+    "note": 76,
+    "layer": "hard",
+    "file": "guitar/76_hard.ogg"
+   },
+   {
+    "note": 77,
+    "layer": "hard",
+    "file": "guitar/77_hard.ogg"
+   },
+   {
+    "note": 78,
+    "layer": "hard",
+    "file": "guitar/78_hard.ogg"
+   },
+   {
+    "note": 79,
+    "layer": "hard",
+    "file": "guitar/79_hard.ogg"
+   },
+   {
+    "note": 80,
+    "layer": "hard",
+    "file": "guitar/80_hard.ogg"
+   },
+   {
+    "note": 81,
+    "layer": "hard",
+    "file": "guitar/81_hard.ogg"
+   },
+   {
+    "note": 82,
+    "layer": "hard",
+    "file": "guitar/82_hard.ogg"
+   },
+   {
+    "note": 83,
+    "layer": "hard",
+    "file": "guitar/83_hard.ogg"
+   },
+   {
+    "note": 84,
+    "layer": "hard",
+    "file": "guitar/84_hard.ogg"
+   }
+  ],
+  "bass": [
+   {
+    "note": 28,
+    "layer": "hard",
+    "file": "bass/28_hard.ogg"
+   },
+   {
+    "note": 29,
+    "layer": "hard",
+    "file": "bass/29_hard.ogg"
+   },
+   {
+    "note": 30,
+    "layer": "hard",
+    "file": "bass/30_hard.ogg"
+   },
+   {
+    "note": 31,
+    "layer": "hard",
+    "file": "bass/31_hard.ogg"
+   },
+   {
+    "note": 32,
+    "layer": "hard",
+    "file": "bass/32_hard.ogg"
+   },
+   {
+    "note": 33,
+    "layer": "hard",
+    "file": "bass/33_hard.ogg"
+   },
+   {
+    "note": 34,
+    "layer": "hard",
+    "file": "bass/34_hard.ogg"
+   },
+   {
+    "note": 35,
+    "layer": "hard",
+    "file": "bass/35_hard.ogg"
+   },
+   {
+    "note": 36,
+    "layer": "hard",
+    "file": "bass/36_hard.ogg"
+   },
+   {
+    "note": 37,
+    "layer": "hard",
+    "file": "bass/37_hard.ogg"
+   },
+   {
+    "note": 38,
+    "layer": "hard",
+    "file": "bass/38_hard.ogg"
+   },
+   {
+    "note": 39,
+    "layer": "hard",
+    "file": "bass/39_hard.ogg"
+   }
+  ]
+ }
 }

@@ -216,7 +216,7 @@ function chordFor(i) {
 }
 
 function padInfo(i) {
-  if (S.padMode === 'drums') return { name: DRUMS[i].name, sub: '', c: DRUMS[i].c };
+  if (S.padMode === 'drums') { const d = padDrum(i); return { name: d.name, sub: '', c: d.c }; }
   if (S.padMode === 'scenes') return sceneInfo(i);
   if (S.padMode === 'chords') {
     const ch = chordFor(i);
@@ -268,8 +268,8 @@ function flashPad(i, holdOn) {
 function padDown(i, vel = 110) {
   if (S.padMode === 'scenes') { flashPad(i); return sceneRecall(i); }
   if (S.padMode === 'drums') {
-    Engine.drum(DRUMS[i].id, vel, 0, S.kit);
-    loopRecord({ type: 'drum', id: DRUMS[i].id, vel, kit: S.kit });
+    Engine.drum(padDrum(i).id, vel, 0, S.kit);
+    loopRecord({ type: 'drum', id: padDrum(i).id, vel, kit: S.kit });
     flashPad(i);
   } else if (S.padMode === 'chords') {
     noteIn('pad' + i, chordFor(i).notes, Math.min(vel, 105));
@@ -899,7 +899,7 @@ function drawLane(i) {
   for (const e of ev.slice(0, 600)) {
     const x = e.t / len * 100;
     if (e.type === 'drum') {
-      const d = DRUMS.findIndex(dr => dr.id === e.id);
+      const d = DRUM_LIB.findIndex(dr => dr.id === e.id);
       html += `<i class="hitm" style="left:${x}%;top:${8 + (d % 4) * 4}px"></i>`;
     } else if (e.type === 'on') {
       const off = ev.find(o => o.type === 'off' && o.src === e.src && o.t > e.t);
@@ -1144,7 +1144,7 @@ function mixData() {
       d.events.forEach(e => { delete e.key; delete e.skip; });
       return d;
     }),
-    sound: { preset: S.preset, kit: S.kit, knobs: S.knobs, padMode: S.padMode, key: S.key, scale: S.scale },
+    sound: { preset: S.preset, kit: S.kit, knobs: S.knobs, padMode: S.padMode, key: S.key, scale: S.scale, padDrums: S.padDrums },
     scenes: scenes.list, presets: customPresets()
   };
 }
@@ -1185,6 +1185,7 @@ function applyMixData(d) {
   if (so.knobs) so.knobs.forEach((v, i) => setKnob(i, v));
   if (so.kit) { S.kit = so.kit; Engine.setKit(S.kit); }
   Object.assign(S, { padMode: so.padMode || S.padMode, key: so.key ?? S.key, scale: so.scale || S.scale });
+  if (so.padDrums) S.padDrums = so.padDrums;
   $('#key').value = S.key;
   if (so.preset) setPreset(so.preset);
   resetLooper();

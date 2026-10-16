@@ -3,8 +3,9 @@
 Toca o teclado MIDI (feito pro AMW Master25 / "MIDI KeyBoard 25A") sem abrir DAW. Electron + Web MIDI + WebAudio, sem samples. Mesma família visual do Kino, Strata e Lembreme.
 
 ## Recursos
-- **19 sons** em 5 grupos:
+- **24 sons** em 6 grupos:
   - Teclas: **piano de cauda gravado** (Steinway, 2 camadas de força), piano elétrico, órgão, clavinet
+  - Gravados: violão nylon, baixo elétrico, vibrafone, harpa de concerto, sax tenor
   - Synth: lead, supersaw, pad, pluck, 8-bit
   - Baixo: baixo, acid (303), sub 808
   - Orquestra: cordas, metais, flauta, harpa
@@ -13,7 +14,7 @@ Toca o teclado MIDI (feito pro AMW Master25 / "MIDI KeyBoard 25A") sem abrir DAW
   O Program Change do teclado troca o som.
 - **8 knobs:** volume, filtro, ressonância, ataque, release, reverb, delay (sincronizado ao BPM) e volume da bateria
 - **8 pads, 3 modos:**
-  - **Bateria:** bumbo, caixa, chimbal, chimbal aberto, palmas, tom, cowbell, prato. Quatro kits: **Acústico** (bateria gravada), Eletrônico, 808 e Lo-fi (a acústica saturada).
+  - **Bateria:** bumbo, caixa, chimbal, chimbal aberto, palmas, tom, cowbell, prato. Quatro kits: **Acústico** (bateria gravada), Eletrônico, 808 e Lo-fi (a acústica saturada). O **botão direito num pad** troca o som dele por qualquer um dos 23 da biblioteca: bateria (tom grave, aro, caixa fraca, chimbal no pé), pratos (condução, cúpula) e percussão (shaker, pandeirola, conga, bongô, cajón, claves, bloco, triângulo).
   - **Acordes:** I–vii° + I oitava acima no tom e escala escolhidos (maior/menor). O acorde segura enquanto o pad está apertado.
   - **Funções:** oitava −/+, som anterior/próximo, sustain, gravar loop, próximo loop, tocar/parar
 - **Loops em faixas (até 12):** o `R` (ou a bolinha da faixa) arma a gravação, e o primeiro loop só começa a contar na primeira nota ou pad. O primeiro loop gravado define o tamanho, e os outros gravam no mesmo tamanho; gravar numa faixa com notas sobrepõe. Cada faixa tem mudo, apagar e um mini piano-roll. Com o metrônomo ligado, o tamanho arredonda para compassos. Cada nota guarda o som/kit com que foi gravada.
@@ -71,4 +72,4 @@ npm run dist
 Saída em `dist/Overtone-Setup-<versão>.exe`. Ícone: `assets/icon.svg` → `npm run icon` gera `renderer/icon.png`. Preferências salvas no localStorage do app (`%APPDATA%\Overtone`).
 
 ## Créditos
-Piano e bateria acústica: [VCSL — Versilian Community Sample Library](https://github.com/sgossner/VCSL), em domínio público (CC0 1.0). Foram convertidos para OGG e encurtados por `renderer/samples/samples.json`.
+Piano, vibrafone, harpa, sax, bateria e percussão: [VCSL — Versilian Community Sample Library](https://github.com/sgossner/VCSL). Violão nylon e baixo elétrico: [FreePats](https://freepats.zenvoid.org/). Tudo em domínio público (CC0 1.0). Foram convertidos para OGG e encurtados por `renderer/samples/samples.json`.

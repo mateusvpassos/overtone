@@ -22,6 +22,27 @@ const PRESETS = [
     osc: [{ type: 'square', gain: .3 }, { type: 'sawtooth', gain: .15, ratio: 2 }],
     filter: { f: 1600, q: 5, env: 3200, envD: .08 }, env: { a: .001, d: .4, s: .3, r: .05 }, vib: 0
   },
+  // ---- gravados ----
+  {
+    id: 'guitar', cat: 'Gravados', name: 'Violão nylon', desc: 'Violão clássico gravado (FreePats)', icon: 'music', c: '#d6a36b',
+    sampler: 'guitar', gain: 1.5, osc: [], filter: { f: 15000, q: .3 }, env: { a: .001, d: 1, s: 1, r: .5 }, vib: 0
+  },
+  {
+    id: 'ebass', cat: 'Gravados', name: 'Baixo elétrico', desc: 'Baixo de dedo gravado, uma oitava abaixo', icon: 'waves', c: '#f87171',
+    sampler: 'bass', shift: -12, gain: 1.6, osc: [], filter: { f: 9000, q: .3 }, env: { a: .001, d: 1, s: 1, r: .2 }, vib: 0
+  },
+  {
+    id: 'vibes', cat: 'Gravados', name: 'Vibrafone', desc: 'Lâminas de metal com baqueta', icon: 'bars', c: '#7dd3fc',
+    sampler: 'vibes', gain: 1.4, osc: [], filter: { f: 15000, q: .3 }, env: { a: .001, d: 1, s: 1, r: 1.2 }, vib: 0
+  },
+  {
+    id: 'charp', cat: 'Gravados', name: 'Harpa de concerto', desc: 'Harpa gravada, cauda longa', icon: 'harp', c: '#f0abfc',
+    sampler: 'harp', gain: 1.4, osc: [], filter: { f: 15000, q: .3 }, env: { a: .001, d: 1, s: 1, r: 1.6 }, vib: 0
+  },
+  {
+    id: 'sax', cat: 'Gravados', name: 'Sax tenor', desc: 'Sax gravado, sustenta ~4s', icon: 'megaphone', c: '#fcd34d',
+    sampler: 'sax', gain: 1.4, osc: [], filter: { f: 12000, q: .3 }, env: { a: .015, d: 1, s: 1, r: .18 }, vib: 0
+  },
   // ---- synth ----
   {
     id: 'lead', cat: 'Synth', name: 'Synth lead', desc: 'Duas serras desafinadas + sub', icon: 'zap', c: '#22c3e6',
@@ -113,7 +134,8 @@ const KITS = [
   { id: 'lofi', name: 'Lo-fi' }
 ];
 
-const DRUMS = [
+// biblioteca de bateria/percussão; os pads usam 8 delas (dá pra trocar)
+const DRUM_LIB = [
   { id: 'kick', name: 'Bumbo', c: '#ff5d6c' },
   { id: 'snare', name: 'Caixa', c: '#ffbf47' },
   { id: 'hat', name: 'Chimbal', c: '#5ef0b0' },
@@ -121,8 +143,27 @@ const DRUMS = [
   { id: 'clap', name: 'Palmas', c: '#f472b6' },
   { id: 'tom', name: 'Tom', c: '#ff9f6e' },
   { id: 'cowbell', name: 'Cowbell', c: '#c084fc' },
-  { id: 'crash', name: 'Prato', c: '#22c3e6' }
+  { id: 'crash', name: 'Prato', c: '#22c3e6' },
+  { id: 'tom2', name: 'Tom grave', c: '#fb923c', g: 'Bateria' },
+  { id: 'rim', name: 'Aro (cross-stick)', c: '#facc15', g: 'Bateria' },
+  { id: 'ghost', name: 'Caixa fraca', c: '#fde68a', g: 'Bateria' },
+  { id: 'pedalhat', name: 'Chimbal no pé', c: '#86efac', g: 'Bateria' },
+  { id: 'ride', name: 'Condução (ride)', c: '#38bdf8', g: 'Pratos' },
+  { id: 'ridebell', name: 'Cúpula do ride', c: '#67e8f9', g: 'Pratos' },
+  { id: 'shaker', name: 'Shaker', c: '#a3e635', g: 'Percussão' },
+  { id: 'tamb', name: 'Pandeirola', c: '#fbbf24', g: 'Percussão' },
+  { id: 'conga', name: 'Conga', c: '#f97316', g: 'Percussão' },
+  { id: 'bongo', name: 'Bongô', c: '#fb7185', g: 'Percussão' },
+  { id: 'cajon', name: 'Cajón grave', c: '#d97706', g: 'Percussão' },
+  { id: 'cajonslap', name: 'Cajón agudo', c: '#f59e0b', g: 'Percussão' },
+  { id: 'claves', name: 'Claves', c: '#e879f9', g: 'Percussão' },
+  { id: 'woodblock', name: 'Bloco de madeira', c: '#c084fc', g: 'Percussão' },
+  { id: 'triangle', name: 'Triângulo', c: '#5eead4', g: 'Percussão' }
 ];
+const DRUMS = DRUM_LIB.slice(0, 8);
+for (const d of DRUMS) d.g = d.id === 'crash' ? 'Pratos' : d.id === 'cowbell' || d.id === 'clap' ? 'Percussão' : 'Bateria';
+// kits sintéticos não têm todas: usa a mais parecida
+const DRUM_FALLBACK = { tom2: 'tom', rim: 'cowbell', ghost: 'snare', pedalhat: 'hat', ride: 'openhat', ridebell: 'cowbell', shaker: 'hat', tamb: 'openhat', conga: 'tom', bongo: 'tom', cajon: 'kick', cajonslap: 'snare', claves: 'cowbell', woodblock: 'cowbell', triangle: 'cowbell' };
 
 const Engine = (() => {
   const ctx = new AudioContext({ latencyHint: 'interactive' });
@@ -212,7 +253,7 @@ const Engine = (() => {
     if (ctx.state !== 'running') ctx.resume();
     let P = PRESETS.find(x => x.id === presetId) || currentPreset;
     // piano gravado ainda carregando: usa o elétrico
-    if (P.sampler && !SAMPLES.piano.length) P = PRESETS.find(x => x.id === 'piano');
+    if (P.sampler && !SAMPLES.inst[P.sampler]?.length) P = PRESETS.find(x => x.id === (P.sampler === 'bass' ? 'bass' : 'piano'));
     if (voices.size >= 32) kill([...voices][0]);
     const t = ctx.currentTime;
     const freq = 440 * 2 ** ((note - 69) / 12);
@@ -243,7 +284,7 @@ const Engine = (() => {
       mod.osc.start(t);
     }
 
-    const oscs = P.sampler ? [sampleOsc(note, vel, t, filt)] : P.osc.map(o => {
+    const oscs = P.sampler ? [sampleOsc(P, note, vel, t, filt)] : P.osc.map(o => {
       const osc = ctx.createOscillator();
       osc.type = o.type;
       osc.frequency.value = freq * (o.ratio || 1);
@@ -273,7 +314,7 @@ const Engine = (() => {
   let currentVib = 0;
 
   // ---------- samples (piano e bateria acústica, VCSL CC0) ----------
-  const SAMPLES = { piano: [], drums: {}, rr: {} };
+  const SAMPLES = { inst: {}, drums: {}, rr: {} };
   async function loadSamples(read) {
     const toBuf = async f => {
       const u8 = await read(f);
@@ -283,20 +324,25 @@ const Engine = (() => {
     const drums = {};
     await Promise.all(Object.entries(man.drums).map(async ([id, files]) => { drums[id] = await Promise.all(files.map(toBuf)); }));
     SAMPLES.drums = drums;
-    const zones = await Promise.all(man.piano.map(async z => ({ ...z, buf: await toBuf(z.file) })));
-    SAMPLES.piano = zones;
+    const inst = man.instruments || { piano: man.piano };
+    // piano primeiro (é o mais usado), depois o resto
+    for (const name of ['piano', ...Object.keys(inst).filter(k => k !== 'piano')]) {
+      SAMPLES.inst[name] = await Promise.all(inst[name].map(async z => ({ ...z, buf: await toBuf(z.file) })));
+    }
   }
   // camada suave abaixo de vel 84; zona mais próxima da nota
-  function sampleOsc(note, vel, t, dest) {
-    const layer = vel >= 84 ? 'hard' : 'soft';
+  function sampleOsc(P, note, vel, t, dest) {
+    const zones = SAMPLES.inst[P.sampler];
+    note += P.shift || 0;
+    const layer = zones.some(z => z.layer === 'soft') && vel < 84 ? 'soft' : 'hard';
     let best = null;
-    for (const z of SAMPLES.piano) if (z.layer === layer && (!best || Math.abs(z.note - note) < Math.abs(best.note - note))) best = z;
+    for (const z of zones) if (z.layer === layer && (!best || Math.abs(z.note - note) < Math.abs(best.note - note))) best = z;
     const src = ctx.createBufferSource();
     src.buffer = best.buf;
     src.playbackRate.value = 2 ** ((note - best.note) / 12);
     src.detune.value = bend;
     const g = ctx.createGain();
-    g.gain.value = layer === 'soft' ? 2.2 : 2.8;
+    g.gain.value = P.gain ? (layer === 'soft' ? P.gain * .8 : P.gain) : layer === 'soft' ? 2.2 : 2.8;
     src.connect(g).connect(dest);
     lfoDepth.connect(src.detune);
     src.start(t);
@@ -420,6 +466,10 @@ const Engine = (() => {
       setTimeout(() => out.disconnect(), (t - ctx.currentTime + 3.5) * 1000);
       return;
     }
+    if (!['kick', 'snare', 'hat', 'openhat', 'clap', 'tom', 'cowbell', 'crash', 'click'].includes(id)) {
+      if (id === 'ghost') out.gain.value *= .45;
+      id = DRUM_FALLBACK[id] || 'hat';
+    }
     if (kit === '808') {
       const done = {
         kick: () => tone(t, 'sine', 125, 48, .07, 1.1, 1.1, out),
@@ -494,7 +544,7 @@ const Engine = (() => {
     setBpm(b) { bpm = b; apply(); },
     setKit(k) { currentKit = k; },
     loadSamples,
-    samplesReady: () => SAMPLES.piano.length > 0,
+    samplesReady: () => (SAMPLES.inst.piano?.length || 0) > 0,
     // gravação do mestre (pós-compressor) para exportar
     async startCapture() {
       if (ctx.state !== 'running') await ctx.resume();

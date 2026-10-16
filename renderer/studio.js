@@ -6,6 +6,8 @@ S.arp ??= { on: false, mode: 'up', rate: '1/16', oct: 1, latch: false, gate: .6 
 S.qGrid ??= '1/16';
 S.countIn ??= false;
 S.customPresets ??= [];
+S.padDrums ??= DRUMS.map(d => d.id);
+function padDrum(i) { return DRUM_LIB.find(d => d.id === S.padDrums[i]) || DRUMS[i]; }
 
 const GRID_DIV = { '1/4': 1, '1/8': 2, '1/8T': 3, '1/16': 4, '1/32': 8 };
 const beatMs = () => 60000 / S.bpm;
@@ -379,7 +381,8 @@ $('#x-go').replaceWith($('#x-go').cloneNode(true));
 $('#x-go').addEventListener('click', () => runExport());
 
 // arquivo MIDI tipo 1: faixa de tempo + uma por faixa de loop
-const GM_DRUM = { kick: 36, snare: 38, hat: 42, openhat: 46, clap: 39, tom: 45, cowbell: 56, crash: 49 };
+const GM_DRUM = { kick: 36, snare: 38, hat: 42, openhat: 46, clap: 39, tom: 45, cowbell: 56, crash: 49, tom2: 41, rim: 37, ghost: 38, pedalhat: 44,
+  ride: 51, ridebell: 53, shaker: 70, tamb: 54, conga: 63, bongo: 60, cajon: 35, cajonslap: 40, claves: 75, woodblock: 76, triangle: 81 };
 function midiFile(reps = 1) {
   const PPQ = 480, tick = ms => Math.round(ms / beatMs() * PPQ);
   const vlq = n => { const b = [n & 0x7f]; while ((n >>= 7)) b.unshift((n & 0x7f) | 0x80); return b; };
@@ -457,7 +460,8 @@ function seqRender() {
   const grid = $('#seq-grid');
   grid.style.setProperty('--n', n);
   grid.style.setProperty('--c', tr.c);
-  grid.innerHTML = DRUMS.map(d => `
+  const ids = [...new Set([...S.padDrums, ...tr.events.filter(e => e.type === 'drum').map(e => e.id)])];
+  grid.innerHTML = ids.map(id => DRUM_LIB.find(d => d.id === id)).filter(Boolean).map(d => `
     <div class="seq-row"><span class="seq-name" style="--dc:${d.c}">${d.name}</span>
       ${Array.from({ length: n }, (_, k) => `<i class="cell ${seqHas(tr, d.id, k, step) ? 'on' : ''} ${k % 4 === 0 ? 'beat' : ''}" data-d="${d.id}" data-k="${k}"></i>`).join('')}
     </div>`).join('');
@@ -865,6 +869,48 @@ openSynth = function (id) {
   SY.base = p && !p.custom ? JSON.parse(JSON.stringify(p)) : null;
   _openSynth(id);
 };
+
+// =====================================================================
+// trocar o som de cada pad (botão direito no pad, modo Bateria)
+// =====================================================================
+let pickPad = null;
+function openDrumPick(i, anchor) {
+  pickPad = i;
+  const pop = $('#drum-pick'), groups = ['Bateria', 'Pratos', 'Percussão'];
+  $('#dp-title').textContent = `Pad ${i + 1}`;
+  $('#dp-list').innerHTML = groups.map(g => `<div class="dp-g">${g}</div>` + DRUM_LIB.filter(d => d.g === g).map(d => `
+    <button class="dp-item ${d.id === S.padDrums[i] ? 'on' : ''}" data-id="${d.id}" style="--c:${d.c}"><span class="l-dot"></span>${d.name}</button>`).join('')).join('');
+  pop.classList.remove('hidden');
+  const r = anchor.getBoundingClientRect(), w = pop.offsetWidth, h = pop.offsetHeight;
+  pop.style.left = clamp(r.left, 8, innerWidth - w - 8) + 'px';
+  pop.style.top = clamp(r.bottom + 6, 8, innerHeight - h - 8) + 'px';
+}
+$('#pad-grid').addEventListener('contextmenu', e => {
+  const p = e.target.closest('.pad');
+  if (!p || S.padMode !== 'drums') return;
+  e.preventDefault();
+  openDrumPick(+p.dataset.i, p);
+});
+$('#dp-list').addEventListener('click', e => {
+  const b = e.target.closest('.dp-item');
+  if (!b) return;
+  S.padDrums[pickPad] = b.dataset.id;
+  for (const x of document.querySelectorAll('.dp-item')) x.classList.toggle('on', x === b);
+  Engine.drum(b.dataset.id, 110, 0, S.kit);
+  renderPads();
+  save();
+  markDirty();
+});
+$('#dp-reset').addEventListener('click', () => {
+  S.padDrums = DRUMS.map(d => d.id);
+  $('#drum-pick').classList.add('hidden');
+  renderPads();
+  save();
+  toast(icon('undo') + 'Pads de bateria voltaram ao padrão');
+});
+document.addEventListener('pointerdown', e => {
+  if (!e.target.closest('#drum-pick')) $('#drum-pick').classList.add('hidden');
+});
 
 // =====================================================================
 // atalhos e início
