@@ -13,6 +13,7 @@
     <div class="brand"><img src="icon.png" alt=""> Overtone</div>
     <div id="device" class="pill" title="Teclados MIDI conectados"><span class="dot"></span><span id="device-name">Procurando teclado…</span></div>
     <div class="spacer"></div>
+    <button id="btn-setup" class="ghost" title="Assistente: gire cada knob e bata em cada pad, na ordem"><i data-icon="knob"></i>Configurar controles</button>
     <button id="btn-map" class="ghost" title="Clique num knob ou pad e mexa no controle do teclado (Esc sai)"><i data-icon="link"></i>Mapear</button>
     <button id="btn-panic" class="ghost" title="Corta todas as notas (Espaço)"><i data-icon="mute"></i>Parar tudo</button>
   </header>
@@ -39,6 +40,7 @@
     <section id="knobs" class="panel">
       <div class="panel-head">
         <h2><i data-icon="knob"></i>Knobs</h2>
+        <button id="btn-knob-reset" class="ghost small-btn" title="Volta todos os knobs para o valor padrão"><i data-icon="undo"></i>Padrão</button>
         <span class="spacer"></span>
         <canvas id="scope" width="360" height="56"></canvas>
       </div>
@@ -104,6 +106,12 @@
     </section>
   </main>
 
+  <div id="wizard" class="hidden">
+    <span class="wiz-count mono" id="wiz-count"></span>
+    <span id="wiz-text"></span>
+    <button id="wiz-skip" class="small-btn">Pular</button>
+    <button id="wiz-cancel" class="small-btn ghost">Cancelar</button>
+  </div>
   <div id="toasts"></div>
   <script src="app.js"></script>
 </body>

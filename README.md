@@ -26,9 +26,10 @@ Toca o teclado MIDI (feito pro AMW Master25 / "MIDI KeyBoard 25A") sem abrir DAW
 - Teclado na tela (clique/arraste), detecção de acorde, osciloscópio e monitor do último sinal MIDI
 
 ## Mapeamento
-- Knobs e pads se ligam sozinhos, em ordem de CC/nota: o knob com o menor CC vira Volume, o seguinte vira Filtro, e assim por diante. Notas no canal 10 viram pads.
-- Para escolher na mão, use **Mapear**: clique no knob/pad da tela e gire/aperte o controle. O que for mapeado na mão fica fixo. `Esc` sai.
-- **Resetar mapeamento** esquece tudo.
+- Os knobs já vêm ligados ao CC70–CC77 (canal 1), na ordem do Master25: o 1º knob é Volume, o 2º é Filtro, e assim por diante. Pads no canal 10 se ligam sozinhos ao bater.
+- **Configurar controles:** é um assistente que pede para girar cada knob e bater em cada pad, na ordem. Use se a ordem estiver errada. **Pular** passa para o próximo controle, e `Esc` cancela.
+- **Mapear:** clique num knob/pad da tela e gire/aperte o controle, para trocar só um. `Esc` sai.
+- **Padrão** (no painel de knobs) volta os valores dos knobs. **Resetar mapeamento** volta as ligações para o padrão.
 
 ## Atalhos (teclado do PC)
 `A`–`Ç` notas · `Z`/`X` oitava · `1`–`8` pads · `↑`/`↓` som · `R` grava no loop selecionado · `←`/`→` escolhe o loop · `Enter` toca/para · `M` metrônomo · `Espaço` parar tudo · arrastar knob com `Shift` = ajuste fino · duplo clique = padrão

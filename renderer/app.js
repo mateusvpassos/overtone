@@ -34,7 +34,8 @@ const ROMAN = ['I', 'II', 'III', 'IV', 'V', 'VI', 'VII'];
 const DEFAULTS = {
   preset: 'piano', kit: 'acustico', knobs: KNOBS.map(k => k.def), padMode: 'drums', key: 0, scale: 'maior',
   oct: 0, trans: 0, bpm: 100, sustain: false,
-  map: { knobs: Array(8).fill(null), pads: Array(8).fill(null) }
+  // os 8 knobs do Master25 mandam CC70–CC77 no canal 1
+  map: { knobs: [70, 71, 72, 73, 74, 75, 76, 77].map(n => `c:0:${n}`), pads: Array(8).fill(null) }
 };
 const S = (() => {
   try { return { ...structuredClone(DEFAULTS), ...JSON.parse(localStorage.getItem('overtone') || '{}') }; } catch { return structuredClone(DEFAULTS); }
@@ -414,7 +415,7 @@ window.addEventListener('keydown', e => {
     case 'Enter': e.preventDefault(); return loopPlay();
     case 'ArrowLeft': e.preventDefault(); return selectTrack(looper.sel - 1);
     case 'ArrowRight': e.preventDefault(); return selectTrack(looper.sel + 1);
-    case 'Escape': if (mapping) toggleMapping(false); return;
+    case 'Escape': if (wizard) wizardEnd(false); else if (mapping) toggleMapping(false); return;
   }
 });
 window.addEventListener('keyup', e => {
@@ -445,7 +446,6 @@ function setLearn(type, i) {
   document.querySelectorAll('.learn').forEach(el => el.classList.remove('learn'));
   document.querySelector(type === 'knob' ? `.knob[data-i="${i}"]` : `.pad[data-i="${i}"]`).classList.add('learn');
 }
-// o que liga sozinho fica em ordem de CC/nota (= ordem física no teclado); o mapeado à mão fica fixo
 const mapLists = type => type === 'knob' ? [S.map.knobs, S.map.knobMan ||= Array(8).fill(false)] : [S.map.pads, S.map.padMan ||= Array(8).fill(false)];
 function assign(type, i, key, manual = true) {
   for (const t of ['knob', 'pad']) {
@@ -455,24 +455,55 @@ function assign(type, i, key, manual = true) {
   const [list, man] = mapLists(type);
   list[i] = key;
   man[i] = manual;
-  sortAuto(type);
   save();
   KNOBS.forEach((_, j) => drawKnob(j));
   renderPads();
 }
-function sortAuto(type) {
-  const [list, man] = mapLists(type);
-  const slots = list.map((_, j) => j).filter(j => !man[j]);
-  const keys = slots.map(j => list[j]).filter(Boolean).sort((a, b) => +a.split(':')[2] - +b.split(':')[2]);
-  slots.forEach((j, n) => { list[j] = keys[n] ?? null; });
-}
 $('#btn-map').addEventListener('click', () => toggleMapping());
+
+// ---------- assistente: um controle de cada vez, na ordem física ----------
+let wizard = null;
+function wizardStart() {
+  for (const t of ['knob', 'pad']) {
+    const [list, man] = mapLists(t);
+    list.fill(null);
+    man.fill(false);
+  }
+  toggleMapping(true);
+  wizard = { step: 0 };
+  wizardStep(0);
+}
+function wizardStep(n) {
+  if (n >= 16) return wizardEnd(true);
+  wizard.step = n;
+  const knob = n < 8, i = n % 8;
+  setLearn(knob ? 'knob' : 'pad', i);
+  $('#wiz-text').innerHTML = knob
+    ? `Gire o <b>${i + 1}º knob</b> do teclado <span class="muted">(vai controlar ${KNOBS[i].name})</span>`
+    : `Bata no <b>${i + 1}º pad</b> do teclado`;
+  $('#wiz-count').textContent = `${n + 1}/16`;
+  $('#wizard').classList.remove('hidden');
+}
+function wizardEnd(done) {
+  wizard = null;
+  $('#wizard').classList.add('hidden');
+  toggleMapping(false);
+  save();
+  if (done) toast(icon('check') + 'Controles configurados');
+}
+$('#btn-setup').addEventListener('click', wizardStart);
+$('#wiz-skip').addEventListener('click', () => wizardStep(wizard.step + 1));
+$('#wiz-cancel').addEventListener('click', () => wizardEnd(false));
+$('#btn-knob-reset').addEventListener('click', () => {
+  KNOBS.forEach((k, i) => setKnob(i, k.def));
+  toast(icon('undo') + 'Knobs voltaram ao padrão');
+});
 $('#btn-reset-map').addEventListener('click', () => {
   S.map = structuredClone(DEFAULTS.map);
   save();
   KNOBS.forEach((_, j) => drawKnob(j));
   renderPads();
-  toast(icon('undo') + 'Mapeamento zerado — mexa nos knobs/pads para ligar de novo');
+  toast(icon('undo') + 'Mapeamento padrão: knobs no CC70–77, pads ligam ao bater');
 });
 $('#btn-panic').addEventListener('click', panic);
 
@@ -515,10 +546,13 @@ function onMidi(e) {
   // modo mapear: o próximo sinal vai para o alvo escolhido
   if (mapping && learn && (isOn || (cmd === 0xB0 && d2 > 0))) {
     if (learn.type === 'knob' && cmd !== 0xB0) return toast(icon('knob') + 'Knob precisa de um controle CC — gire um knob');
+    // no assistente, o knob que acabou de ser configurado continua mandando sinal: ignora
+    if (wizard && [...S.map.knobs, ...S.map.pads].includes(cmd === 0xB0 ? ck : nk)) return;
     assign(learn.type, learn.i, cmd === 0xB0 ? ck : nk);
     toast(icon('check') + `${learn.type === 'knob' ? KNOBS[learn.i].name : 'Pad ' + (learn.i + 1)} ← ${mapLabel(cmd === 0xB0 ? ck : nk)}`);
     document.querySelectorAll('.learn').forEach(el => el.classList.remove('learn'));
     learn = null;
+    if (wizard) wizardStep(wizard.step + 1);
     return;
   }
 
@@ -1028,8 +1062,7 @@ function toast(html) {
 }
 
 // ---------- início ----------
-sortAuto('knob');
-sortAuto('pad');
+if (S.map.knobs.every(k => !k)) S.map.knobs = structuredClone(DEFAULTS.map.knobs);
 hydrateIcons();
 renderSounds();
 renderKnobs();
