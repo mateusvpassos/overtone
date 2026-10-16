@@ -1,0 +1,42 @@
+# Overtone
+
+Toca o teclado MIDI (feito pro AMW Master25 / "MIDI KeyBoard 25A") sem abrir DAW. Electron + Web MIDI + WebAudio, sem samples. Mesma família visual do Kino, Strata e Lembreme.
+
+## Recursos
+- **18 sons sintetizados** em 5 grupos:
+  - Teclas: piano elétrico, órgão, clavinet
+  - Synth: lead, supersaw, pad, pluck, 8-bit
+  - Baixo: baixo, acid (303), sub 808
+  - Orquestra: cordas, metais, flauta, harpa
+  - Percussivo: sino, marimba, kalimba
+
+  O Program Change do teclado troca o som.
+- **8 knobs:** volume, filtro, ressonância, ataque, release, reverb, delay (sincronizado ao BPM) e volume da bateria
+- **8 pads, 3 modos:**
+  - **Bateria:** bumbo, caixa, chimbal, chimbal aberto, palmas, tom, cowbell, prato. Três kits: Acústico, 808 e Lo-fi.
+  - **Acordes:** I–vii° + I oitava acima no tom e escala escolhidos (maior/menor). O acorde segura enquanto o pad está apertado.
+  - **Funções:** oitava −/+, som anterior/próximo, sustain, gravar loop, próximo loop, tocar/parar
+- **4 loops em faixas:** o primeiro loop gravado define o tamanho. Os outros gravam no mesmo tamanho, e gravar numa faixa com notas sobrepõe. Cada faixa tem mudo, apagar e um mini piano-roll. Com o metrônomo ligado, o tamanho arredonda para compassos. Cada nota guarda o som/kit com que foi gravada: grave a bateria no Loop 1, o baixo no Loop 2 e o piano no Loop 3.
+- **Mod wheel** = vibrato · **Pitch bend** = ±2 semitons · **CC64** = sustain · **CC7** = volume
+- Teclado na tela (clique/arraste), detecção de acorde, osciloscópio e monitor do último sinal MIDI
+
+## Mapeamento
+- Knobs e pads se ligam sozinhos, em ordem de CC/nota: o knob com o menor CC vira Volume, o seguinte vira Filtro, e assim por diante. Notas no canal 10 viram pads.
+- Para escolher na mão, use **Mapear**: clique no knob/pad da tela e gire/aperte o controle. O que for mapeado na mão fica fixo. `Esc` sai.
+- **Resetar mapeamento** esquece tudo.
+
+## Atalhos (teclado do PC)
+`A`–`Ç` notas · `Z`/`X` oitava · `1`–`8` pads · `↑`/`↓` som · `R` grava no loop selecionado · `←`/`→` escolhe o loop · `Enter` toca/para · `M` metrônomo · `Espaço` parar tudo · arrastar knob com `Shift` = ajuste fino · duplo clique = padrão
+
+## Rodar
+```bash
+npm install
+npm start
+```
+Se o `npm install` não baixar o Electron (scripts de instalação bloqueados), rode `node node_modules/electron/install.js`.
+
+## Gerar instalador
+```bash
+npm run dist
+```
+Saída em `dist/Overtone-Setup-<versão>.exe`. Ícone: `assets/icon.svg` → `npm run icon` gera `renderer/icon.png`. Preferências salvas no localStorage do app (`%APPDATA%\Overtone`).

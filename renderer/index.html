@@ -1,0 +1,104 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data:; font-src 'self'">
+  <title>Overtone</title>
+  <link rel="stylesheet" href="style.css">
+  <script src="icons.js"></script>
+  <script src="audio.js"></script>
+</head>
+<body>
+  <header id="titlebar">
+    <div class="brand"><img src="icon.png" alt=""> Overtone</div>
+    <div id="device" class="pill" title="Teclados MIDI conectados"><span class="dot"></span><span id="device-name">Procurando teclado…</span></div>
+    <div class="spacer"></div>
+    <button id="btn-map" class="ghost" title="Clique num knob ou pad e mexa no controle do teclado (Esc sai)"><i data-icon="link"></i>Mapear</button>
+    <button id="btn-panic" class="ghost" title="Corta todas as notas (Espaço)"><i data-icon="mute"></i>Parar tudo</button>
+  </header>
+
+  <main id="workspace">
+    <section id="sounds" class="panel">
+      <div class="panel-head"><h2>Sons</h2><span class="spacer"></span><span class="muted small">Program Change muda daqui</span></div>
+      <div id="sound-list"></div>
+      <div class="side-ctrls">
+        <div class="stepper-row">
+          <span class="lbl">Oitava</span>
+          <div class="stepper" id="oct"><button data-d="-1" title="Z"><i data-icon="minus"></i></button><b></b><button data-d="1" title="X"><i data-icon="plus"></i></button></div>
+        </div>
+        <div class="stepper-row">
+          <span class="lbl">Transpor</span>
+          <div class="stepper" id="trans"><button data-d="-1"><i data-icon="minus"></i></button><b></b><button data-d="1"><i data-icon="plus"></i></button></div>
+        </div>
+        <label class="switch" title="Segura as notas depois de soltar (pedal CC64 também funciona)">
+          <input type="checkbox" id="opt-sustain"><span class="knob-sw"></span>Sustain
+        </label>
+      </div>
+    </section>
+
+    <section id="knobs" class="panel">
+      <div class="panel-head">
+        <h2><i data-icon="knob"></i>Knobs</h2>
+        <span class="spacer"></span>
+        <canvas id="scope" width="360" height="56"></canvas>
+      </div>
+      <div id="knob-grid"></div>
+    </section>
+
+    <section id="pads" class="panel">
+      <div class="panel-head">
+        <h2><i data-icon="grid"></i>Pads</h2>
+        <span class="spacer"></span>
+        <div class="seg" id="pad-mode">
+          <button data-m="drums"><i data-icon="drum"></i>Bateria</button>
+          <button data-m="chords"><i data-icon="music"></i>Acordes</button>
+          <button data-m="funcs"><i data-icon="zap"></i>Funções</button>
+        </div>
+      </div>
+      <div class="chord-opts hidden" id="chord-opts">
+        <span class="lbl">Tom</span>
+        <select id="key"></select>
+        <div class="seg small" id="scale">
+          <button data-s="maior">Maior</button>
+          <button data-s="menor">Menor</button>
+        </div>
+      </div>
+      <div class="chord-opts hidden" id="kit-opts">
+        <span class="lbl">Kit</span>
+        <div class="seg small" id="kit"></div>
+      </div>
+      <div id="pad-grid"></div>
+    </section>
+
+    <section id="loops" class="panel">
+      <div class="panel-head">
+        <h2><i data-icon="repeat"></i>Loops</h2>
+        <span id="loop-info" class="muted small mono"></span>
+        <span class="spacer"></span>
+        <button id="t-play" class="icon-btn" title="Tocar / parar todos (Enter)"><i data-icon="play"></i></button>
+        <button id="t-metro" class="icon-btn" title="Metrônomo (M) — com ele ligado o loop fecha em compassos"><i data-icon="metronome"></i></button>
+        <div class="stepper bpm" id="bpm" title="BPM"><button data-d="-5"><i data-icon="minus"></i></button><b></b><button data-d="5"><i data-icon="plus"></i></button></div>
+        <button id="t-clear" class="ghost" title="Apagar todos os loops"><i data-icon="trash"></i>Limpar tudo</button>
+      </div>
+      <div id="loop-tracks"></div>
+    </section>
+
+    <section id="keys" class="panel">
+      <div class="panel-head">
+        <div class="now"><span id="now-note">—</span><span id="now-chord" class="muted"></span></div>
+        <span class="spacer"></span>
+        <span class="monitor mono" id="monitor">aguardando sinal…</span>
+      </div>
+      <div id="keyboard"></div>
+      <footer class="keys-foot">
+        <span class="muted">Teclado do PC: <kbd>A</kbd>–<kbd>Ç</kbd> notas · <kbd>Z</kbd>/<kbd>X</kbd> oitava · <kbd>1</kbd>–<kbd>8</kbd> pads · <kbd>↑</kbd>/<kbd>↓</kbd> som · <kbd>R</kbd> grava · <kbd>←</kbd>/<kbd>→</kbd> loop · <kbd>Enter</kbd> toca · <kbd>Espaço</kbd> parar tudo</span>
+        <span class="spacer"></span>
+        <button id="btn-reset-map" class="ghost small-btn" title="Esquece knobs e pads aprendidos"><i data-icon="undo"></i>Resetar mapeamento</button>
+      </footer>
+    </section>
+  </main>
+
+  <div id="toasts"></div>
+  <script src="app.js"></script>
+</body>
+</html>
