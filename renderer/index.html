@@ -20,7 +20,7 @@
 
   <main id="workspace">
     <section id="sounds" class="panel">
-      <div class="panel-head"><h2>Sons</h2><span class="spacer"></span><span class="muted small">Program Change muda daqui</span></div>
+      <div class="panel-head"><h2>Sons</h2><span class="spacer"></span><button id="btn-newsound" class="ghost small-btn" title="Cria um som seu a partir do som atual"><i data-icon="plus"></i>Som</button></div>
       <div id="sound-list"></div>
       <div class="side-ctrls">
         <div class="stepper-row">
@@ -34,6 +34,17 @@
         <label class="switch" title="Segura as notas depois de soltar (pedal CC64 também funciona)">
           <input type="checkbox" id="opt-sustain"><span class="knob-sw"></span>Sustain
         </label>
+        <div class="arp">
+          <label class="switch" title="Segure notas/acordes e ele toca em sequência no BPM (Q)">
+            <input type="checkbox" id="arp-on"><span class="knob-sw"></span>Arpejador
+          </label>
+          <div class="arp-opts">
+            <select id="arp-mode" title="Ordem"><option value="up">Sobe</option><option value="down">Desce</option><option value="updown">Sobe e desce</option><option value="random">Aleatório</option><option value="played">Como tocou</option></select>
+            <select id="arp-rate" title="Velocidade"><option>1/4</option><option>1/8</option><option>1/8T</option><option>1/16</option><option>1/32</option></select>
+            <select id="arp-oct" title="Oitavas"><option value="1">1 oit.</option><option value="2">2 oit.</option><option value="3">3 oit.</option></select>
+            <label class="chk" title="Continua tocando depois de soltar; o próximo acorde substitui"><input type="checkbox" id="arp-latch">Trava</label>
+          </div>
+        </div>
       </div>
     </section>
 
@@ -55,6 +66,7 @@
           <button data-m="drums"><i data-icon="drum"></i>Bateria</button>
           <button data-m="chords"><i data-icon="music"></i>Acordes</button>
           <button data-m="funcs"><i data-icon="zap"></i>Funções</button>
+          <button data-m="scenes"><i data-icon="layers"></i>Cenas</button>
         </div>
       </div>
       <div class="chord-opts hidden" id="chord-opts">
@@ -77,20 +89,31 @@
         <h2><i data-icon="repeat"></i>Loops</h2>
         <button id="btn-mixes" class="mix-pill" title="Mixes salvos"><i data-icon="folder"></i><span id="mix-name"></span></button>
         <button id="btn-save" class="icon-btn ghost" title="Salvar mix (Ctrl+S)"><i data-icon="save"></i></button>
-        <button id="t-add" class="ghost small-btn" title="Adicionar faixa"><i data-icon="plus"></i>Faixa</button>
-        <button id="btn-export" class="ghost small-btn" title="Exportar o mix em WAV ou MP3"><i data-icon="download"></i>Exportar</button>
+        <button id="btn-export" class="ghost small-btn" title="Exportar mix, faixas separadas ou MIDI"><i data-icon="download"></i>Exportar</button>
         <span id="loop-info" class="muted small mono"></span>
         <span class="spacer"></span>
-        <div id="edit-tools" class="edit-tools hidden">
-          <span id="e-range" class="mono small"></span>
-          <button id="e-keep" class="small-btn" title="O trecho vira o loop inteiro (todas as faixas)"><i data-icon="scissors"></i>Manter só o trecho</button>
-          <button id="e-cut" class="small-btn" title="Apaga as notas do trecho nesta faixa (Delete)"><i data-icon="eraser"></i>Apagar trecho</button>
-          <button id="e-undo" class="small-btn ghost" title="Desfazer (Ctrl+Z)"><i data-icon="undo"></i>Desfazer</button>
-        </div>
         <button id="t-play" class="icon-btn" title="Tocar / parar todos (Enter)"><i data-icon="play"></i></button>
         <button id="t-metro" class="icon-btn" title="Metrônomo (M) — com ele ligado o loop fecha em compassos"><i data-icon="metronome"></i></button>
+        <button id="t-count" class="small-btn" title="Contagem de 1 compasso antes de gravar (C)">1, 2, 3, 4</button>
         <div class="stepper bpm" id="bpm" title="BPM"><button data-d="-5"><i data-icon="minus"></i></button><b></b><button data-d="5"><i data-icon="plus"></i></button></div>
-        <button id="t-clear" class="ghost" title="Apagar todos os loops"><i data-icon="trash"></i>Limpar tudo</button>
+      </div>
+      <div class="loop-tools">
+        <button id="t-add" class="ghost small-btn" title="Adicionar faixa"><i data-icon="plus"></i>Faixa</button>
+        <span class="tsep"></span>
+        <select id="q-grid" title="Grade do quantizar / editor"><option>1/4</option><option>1/8</option><option>1/16</option><option>1/32</option></select>
+        <button id="btn-quant" class="small-btn" title="Encaixa as notas da faixa selecionada na grade (Shift = 50%)"><i data-icon="grid"></i>Quantizar</button>
+        <button id="btn-roll" class="small-btn" title="Editor de notas da faixa selecionada"><i data-icon="piano"></i>Notas</button>
+        <button id="btn-seq" class="small-btn" title="Bateria em passos na faixa selecionada"><i data-icon="drum"></i>Passos</button>
+        <div id="edit-tools" class="edit-tools hidden">
+          <span id="e-range" class="mono small"></span>
+          <button id="e-keep" class="small-btn" title="O trecho vira o loop inteiro (todas as faixas)"><i data-icon="scissors"></i>Manter só</button>
+          <button id="e-cut" class="small-btn" title="Apaga as notas do trecho nesta faixa (Delete)"><i data-icon="eraser"></i>Apagar</button>
+          <button id="e-undo" class="small-btn ghost" title="Desfazer (Ctrl+Z)"><i data-icon="undo"></i>Desfazer</button>
+        </div>
+        <span class="spacer"></span>
+        <span class="lbl" title="Clique toca a cena · Shift+clique grava as faixas ligadas agora · Alt+clique apaga">Cenas</span>
+        <div id="scene-bar"></div>
+        <button id="t-clear" class="ghost small-btn" title="Apagar todos os loops"><i data-icon="trash"></i>Limpar</button>
       </div>
       <div id="loop-tracks"></div>
     </section>
@@ -103,7 +126,7 @@
       </div>
       <div id="keyboard"></div>
       <footer class="keys-foot">
-        <span class="muted">Teclado do PC: <kbd>A</kbd>–<kbd>Ç</kbd> notas · <kbd>Z</kbd>/<kbd>X</kbd> oitava · <kbd>1</kbd>–<kbd>8</kbd> pads · <kbd>↑</kbd>/<kbd>↓</kbd> som · <kbd>R</kbd> grava · <kbd>←</kbd>/<kbd>→</kbd> loop · <kbd>Enter</kbd> toca · <kbd>Espaço</kbd> para tudo</span>
+        <span class="muted">PC: <kbd>A</kbd>–<kbd>Ç</kbd> notas · <kbd>Z</kbd>/<kbd>X</kbd> oitava · <kbd>1</kbd>–<kbd>8</kbd> pads · <kbd>↑</kbd>/<kbd>↓</kbd> som · <kbd>R</kbd> grava · <kbd>←</kbd>/<kbd>→</kbd> loop · <kbd>Enter</kbd> toca · <kbd>Q</kbd> arpejo · <kbd>Espaço</kbd> para tudo</span>
         <span class="spacer"></span>
         <button id="btn-reset-map" class="ghost small-btn" title="Esquece knobs e pads aprendidos"><i data-icon="undo"></i>Resetar mapeamento</button>
       </footer>
@@ -134,7 +157,9 @@
       <div class="panel-head"><h2><i data-icon="download"></i>Exportar mix</h2><span class="spacer"></span>
         <button id="x-close" class="icon-btn ghost"><i data-icon="x"></i></button></div>
       <div class="x-body">
-        <div class="x-row"><span class="lbl">Formato</span>
+        <div class="x-row"><span class="lbl">O quê</span>
+          <div class="seg" id="x-what"><button data-w="mix">Mix</button><button data-w="stems">Faixas separadas</button><button data-w="midi">MIDI (.mid)</button></div></div>
+        <div class="x-row" id="x-format-row"><span class="lbl">Formato</span>
           <div class="seg" id="x-format"><button data-f="wav">WAV <span class="muted small">sem perda</span></button><button data-f="mp3">MP3 <span class="muted small">192 kbps</span></button></div></div>
         <div class="x-row"><span class="lbl">Voltas</span>
           <div class="seg" id="x-reps"><button data-r="1">1</button><button data-r="2">2</button><button data-r="4">4</button><button data-r="8">8</button></div></div>
@@ -151,7 +176,58 @@
       </div>
     </div>
   </div>
+  <div id="track-pop" class="pop hidden">
+    <div class="pop-head"><span class="l-dot"></span><b id="tp-name"></b></div>
+    <label class="pop-row"><span>Pan</span><input type="range" id="tp-pan" min="-1" max="1" step="0.01" title="Duplo clique centraliza"><em id="tp-pan-v" class="mono"></em></label>
+    <label class="pop-row"><span>Efeito</span><input type="range" id="tp-fx" min="0" max="1.5" step="0.01" title="Quanto de reverb/delay a faixa recebe"><em id="tp-fx-v" class="mono"></em></label>
+    <div class="pop-colors" id="tp-colors"></div>
+    <div class="pop-acts">
+      <button class="small-btn" data-a="quant"><i data-icon="grid"></i>Quantizar</button>
+      <button class="small-btn" data-a="roll"><i data-icon="piano"></i>Notas</button>
+      <button class="small-btn" data-a="seq"><i data-icon="drum"></i>Passos</button>
+    </div>
+  </div>
+
+  <div id="seq-modal" class="modal-wrap hidden">
+    <div class="modal panel wide">
+      <div class="panel-head"><h2><i data-icon="drum"></i>Bateria em passos</h2>
+        <select id="seq-track"></select>
+        <div class="seg small" id="seq-kit"></div>
+        <span class="muted small" id="seq-info"></span>
+        <span class="spacer"></span>
+        <button id="seq-clear" class="ghost small-btn" title="Tira a bateria desta faixa"><i data-icon="eraser"></i>Limpar bateria</button>
+        <button class="icon-btn ghost m-close"><i data-icon="x"></i></button></div>
+      <div id="seq-grid"></div>
+      <div class="modal-foot muted small">Clique ou arraste para ligar/desligar · Shift = acento · o tamanho do loop define os passos (16 por compasso)</div>
+    </div>
+  </div>
+
+  <div id="roll-modal" class="modal-wrap hidden">
+    <div class="modal panel wide">
+      <div class="panel-head"><h2><i data-icon="piano"></i>Notas</h2>
+        <select id="roll-track"></select>
+        <span class="muted small" id="roll-info"></span>
+        <span class="spacer"></span>
+        <button id="roll-quant" class="small-btn" title="Quantizar todas as notas na grade"><i data-icon="grid"></i>Quantizar</button>
+        <button class="icon-btn ghost m-close"><i data-icon="x"></i></button></div>
+      <div id="roll-wrap"><div id="roll-keys"></div><div id="roll-grid"><span id="roll-head"></span></div></div>
+      <div class="modal-foot muted small">Clique no vazio cria · arraste move · borda direita muda a duração · duplo clique ou Delete apaga · roda do mouse = força · Alt solta da grade</div>
+    </div>
+  </div>
+
+  <div id="synth-modal" class="modal-wrap hidden">
+    <div class="modal panel synth">
+      <div class="panel-head"><h2><i data-icon="sparkle"></i>Editor de som</h2>
+        <input id="sy-name" type="text" maxlength="28" spellcheck="false" autocomplete="off">
+        <span class="spacer"></span>
+        <button id="sy-del" class="ghost small-btn danger-hover"><i data-icon="trash"></i>Excluir</button>
+        <button class="icon-btn ghost m-close"><i data-icon="x"></i></button></div>
+      <div id="sy-body"></div>
+      <div class="modal-foot muted small">Toque no teclado enquanto mexe — as mudanças valem na hora e ficam salvas em "Meus sons".</div>
+    </div>
+  </div>
   <div id="toasts"></div>
   <script src="app.js"></script>
+  <script src="studio.js"></script>
 </body>
 </html>

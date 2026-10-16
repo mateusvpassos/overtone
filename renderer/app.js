@@ -89,7 +89,7 @@ function renderSounds() {
     <button class="sound ${p.id === S.preset ? 'on' : ''}" data-id="${p.id}" style="--c:${p.c}">
       <span class="tile">${icon(p.icon, 18)}</span>
       <span><div class="nm">${p.name}</div><div class="ds">${p.desc}</div></span>
-      <span class="n">${String(i + 1).padStart(2, '0')}</span>
+      <span class="n">${p.custom ? `<i class="s-edit" title="Editar som">${icon('pencil', 14)}</i>` : String(i + 1).padStart(2, '0')}</span>
     </button>`).join('');
 }
 function setPreset(id) {
@@ -108,6 +108,7 @@ function stepPreset(d) {
 }
 $('#sound-list').addEventListener('click', e => {
   const b = e.target.closest('.sound');
+  if (b && e.target.closest('.s-edit')) { setPreset(b.dataset.id); return openSynth(b.dataset.id); }
   if (b) setPreset(b.dataset.id);
 });
 
@@ -216,6 +217,7 @@ function chordFor(i) {
 
 function padInfo(i) {
   if (S.padMode === 'drums') return { name: DRUMS[i].name, sub: '', c: DRUMS[i].c };
+  if (S.padMode === 'scenes') return sceneInfo(i);
   if (S.padMode === 'chords') {
     const ch = chordFor(i);
     return { name: ch.name, sub: ch.roman, c: PRESETS.find(p => p.id === S.preset).c };
@@ -264,12 +266,13 @@ function flashPad(i, holdOn) {
 }
 
 function padDown(i, vel = 110) {
+  if (S.padMode === 'scenes') { flashPad(i); return sceneRecall(i); }
   if (S.padMode === 'drums') {
     Engine.drum(DRUMS[i].id, vel, 0, S.kit);
     loopRecord({ type: 'drum', id: DRUMS[i].id, vel, kit: S.kit });
     flashPad(i);
   } else if (S.padMode === 'chords') {
-    startNotes('pad' + i, chordFor(i).notes, Math.min(vel, 105));
+    noteIn('pad' + i, chordFor(i).notes, Math.min(vel, 105));
     flashPad(i, true);
   } else {
     flashPad(i);
@@ -277,7 +280,7 @@ function padDown(i, vel = 110) {
   }
 }
 function padUp(i) {
-  if (S.padMode === 'chords') stopSrc('pad' + i);
+  if (S.padMode === 'chords') noteOut('pad' + i);
   $('#pad-grid').children[i].classList.remove('hit');
 }
 
@@ -309,7 +312,7 @@ function runFunc(id) {
 $('#pad-mode').addEventListener('click', e => {
   const b = e.target.closest('button');
   if (!b) return;
-  for (let i = 0; i < 8; i++) stopSrc('pad' + i);
+  for (let i = 0; i < 8; i++) noteOut('pad' + i);
   S.padMode = b.dataset.m;
   renderPads();
   save();
@@ -353,14 +356,14 @@ function renderKeyboard() {
     if (!el || !el.dataset.n) return;
     if (down === el.dataset.n) return;
     down = el.dataset.n;
-    startNotes('mouse', [+el.dataset.n], 100);
+    noteIn('mouse', [+el.dataset.n], 100);
   };
   kb.addEventListener('pointerdown', e => { kb.setPointerCapture(e.pointerId); play(e.target.closest('[data-n]')); });
   kb.addEventListener('pointermove', e => {
     if (down === null) return;
     play(document.elementFromPoint(e.clientX, e.clientY)?.closest('#keyboard [data-n]'));
   });
-  const end = () => { if (down !== null) { down = null; stopSrc('mouse'); } };
+  const end = () => { if (down !== null) { down = null; noteOut('mouse'); } };
   kb.addEventListener('pointerup', end);
   kb.addEventListener('pointercancel', end);
 })();
@@ -402,7 +405,7 @@ window.addEventListener('keydown', e => {
   if (e.target.tagName === 'SELECT' || e.target.tagName === 'INPUT' || e.ctrlKey || e.altKey || e.metaKey) return;
   if (e.repeat) { if (e.code in PC_KEYS || /^Digit[1-8]$/.test(e.code) || e.code === 'Space') e.preventDefault(); return; }
   Engine.resume();
-  if (e.code in PC_KEYS) return startNotes('pc' + e.code, [playNote(48 + PC_KEYS[e.code])], 100);
+  if (e.code in PC_KEYS) return noteIn('pc' + e.code, [playNote(48 + PC_KEYS[e.code])], 100);
   const d = /^Digit([1-8])$/.exec(e.code);
   if (d) return padDown(+d[1] - 1, 110);
   switch (e.code) {
@@ -420,7 +423,7 @@ window.addEventListener('keydown', e => {
   }
 });
 window.addEventListener('keyup', e => {
-  if (e.code in PC_KEYS) stopSrc('pc' + e.code);
+  if (e.code in PC_KEYS) noteOut('pc' + e.code);
   const d = /^Digit([1-8])$/.exec(e.code);
   if (d) padUp(+d[1] - 1);
 });
@@ -566,8 +569,8 @@ function onMidi(e) {
       else pad = d1 % 8;
     } else if (pad < 0 && ch === 9) pad = d1 % 8;
     if (pad >= 0) return isOn ? padDown(pad, d2) : padUp(pad);
-    if (isOn) startNotes('m' + d1, [playNote(d1)], d2);
-    else stopSrc('m' + d1);
+    if (isOn) noteIn('m' + d1, [playNote(d1)], d2);
+    else noteOut('m' + d1);
     return;
   }
 
@@ -655,15 +658,15 @@ let trackSeq = 0;
 function newTrack(o = {}) {
   const id = o.id || ++trackSeq;
   trackSeq = Math.max(trackSeq, id);
-  const vol = o.vol ?? .8;
-  return { id, c: o.c || LOOP_COLORS[(id - 1) % LOOP_COLORS.length], name: o.name || 'Loop ' + id, events: o.events || [], mute: !!o.mute, vol, bus: Engine.bus(vol ** 1.5) };
+  const vol = o.vol ?? .8, pan = o.pan ?? 0, fx = o.fx ?? 1;
+  return { id, c: o.c || LOOP_COLORS[(id - 1) % LOOP_COLORS.length], name: o.name || 'Loop ' + id, events: o.events || [], mute: !!o.mute, vol, pan, fx, bus: Engine.bus(vol ** 1.5, pan, fx) };
 }
 const looper = {
   len: 0, start: 0, last: 0, playing: false, rec: null, waiting: false, sel: 0, timer: null, range: null, undo: [],
   tracks: Array.from({ length: 4 }, () => newTrack())
 };
 const now = () => performance.now();
-const loopPos = () => looper.len ? (now() - looper.start) % looper.len : now() - looper.start;
+const loopPos = () => looper.len ? Math.max(0, now() - looper.start) % looper.len : now() - looper.start;
 const realSrcs = () => [...held.keys()].filter(k => !k.startsWith('L'));
 
 function loopRecord(ev) {
@@ -677,7 +680,7 @@ function loopRecord(ev) {
   }
   const tr = looper.tracks[looper.rec];
   // na sobreposição, não repete na mesma volta o que acabou de ser tocado
-  tr.events.push({ ...ev, t: loopPos(), skip: looper.len ? now() + looper.len - 30 : 0 });
+  tr.events.push({ ...ev, t: Math.max(0, loopPos()), skip: looper.len ? now() + looper.len - 30 : 0 });
   tr.events.sort((a, b) => a.t - b.t);
   drawLane(looper.rec);
   markDirty();
@@ -692,7 +695,11 @@ function loopRec(i = looper.sel) {
   if (!looper.len) {
     looper.waiting = true;
     for (const tr of looper.tracks) tr.events = [];
-  } else if (!looper.playing) loopPlay(true);
+    if (S.countIn) countIn(() => { looper.waiting = false; });
+  } else if (!looper.playing) {
+    if (S.countIn) countIn(null, true);
+    else loopPlay(true);
+  }
   ensureTimer();
   renderLoops();
 }
@@ -798,7 +805,8 @@ function ensureTimer() {
 }
 
 function loopTick() {
-  if (!looper.playing || !looper.len) return;
+  if (!looper.playing || !looper.len || now() < looper.start) return;
+  sceneTick();
   const pos = loopPos();
   const fire = (a, b) => looper.tracks.forEach((tr, ti) => {
     if (tr.mute) return;
@@ -835,6 +843,7 @@ function renderLoops() {
         <input type="range" class="l-vol" min="0" max="1" step="0.01" value="${tr.vol}" title="Volume da faixa">
         <div class="lane" title="Arraste para selecionar um trecho (cortar / apagar)"><div class="marks"></div><span class="lsel"></span><span class="head"></span><em class="l-empty"></em></div>
         <span class="l-count mono"></span>
+        <button class="icon-btn ghost l-more" title="Pan, efeito, cor e editores">${icon('sliders')}</button>
         <button class="icon-btn ghost l-clear" title="Esvaziar a faixa (apaga as notas)">${icon('eraser')}</button>
         <button class="icon-btn ghost l-del" title="Remover a faixa">${icon('x')}</button>
       </div>`).join('');
@@ -847,6 +856,8 @@ function renderLoops() {
     row.classList.toggle('rec', i === looper.rec);
     row.classList.toggle('muted', tr.mute);
     row.querySelector('.l-vol').style.setProperty('--v', tr.vol * 100 + '%');
+    if (document.activeElement !== row.querySelector('.l-vol')) row.querySelector('.l-vol').value = tr.vol;
+    row.style.setProperty('--c', tr.c);
     row.querySelector('.l-mute').innerHTML = icon(tr.mute ? 'mute' : 'volume');
     row.querySelector('.l-count').textContent = n || '';
     row.querySelector('.l-empty').textContent = n ? '' : i === looper.rec ? (looper.waiting ? 'armado · começa na primeira nota' : 'gravando…') : looper.len ? 'vazio · grava por cima no mesmo tamanho' : i === looper.sel ? 'vazio · R grava e define o tamanho' : 'vazio';
@@ -912,6 +923,7 @@ function drawLane(i) {
     if (e.target.closest('.l-mute')) return toggleMute(i);
     if (e.target.closest('.l-clear')) return clearTrack(i);
     if (e.target.closest('.l-del')) return removeTrack(i);
+    if (e.target.closest('.l-more')) return openTrackPop(i, e.target.closest('.l-more'));
     if (e.target.closest('.l-vol, .l-input')) return;
     if (e.target.closest('.lane') && looper.range?.moved) return;
     selectTrack(i);
@@ -990,7 +1002,7 @@ function fromBlocks(blocks) {
   });
   return ev.sort((x, y) => x.t - y.t);
 }
-const trackData = t => ({ id: t.id, name: t.name, c: t.c, vol: t.vol, mute: t.mute, events: t.events.map(e => ({ ...e, key: undefined })) });
+const trackData = t => ({ id: t.id, name: t.name, c: t.c, vol: t.vol, pan: t.pan, fx: t.fx, mute: t.mute, events: t.events.map(e => ({ ...e, key: undefined })) });
 function snapshot() {
   markDirty();
   looper.undo.push({ len: looper.len, tracks: looper.tracks.map(trackData) });
@@ -1053,10 +1065,12 @@ function setTracks(list) {
     if (!t) return newTrack(d);
     Object.assign(t, d);
     t.bus.set(t.vol ** 1.5);
+    t.bus.setPan(t.pan || 0);
+    t.bus.setFx(t.fx ?? 1);
     old.delete(d.id);
     return t;
   });
-  for (const t of old.values()) for (const g of [t.bus.synth, t.bus.drum, t.bus.lofi]) setTimeout(() => g.disconnect(), 3000);
+  for (const t of old.values()) t.bus.dispose();
   looper.sel = Math.min(looper.sel, looper.tracks.length - 1);
   $('#loop-tracks').innerHTML = '';
   renderLoops();
@@ -1111,6 +1125,7 @@ $('#t-clear').addEventListener('click', clearAll);
 const mix = { name: '', file: null, dirty: false };
 
 function markDirty() {
+  autosaveSoon();
   if (mix.dirty) return;
   mix.dirty = true;
   renderMixName();
@@ -1129,7 +1144,8 @@ function mixData() {
       d.events.forEach(e => { delete e.key; delete e.skip; });
       return d;
     }),
-    sound: { preset: S.preset, kit: S.kit, knobs: S.knobs, padMode: S.padMode, key: S.key, scale: S.scale }
+    sound: { preset: S.preset, kit: S.kit, knobs: S.knobs, padMode: S.padMode, key: S.key, scale: S.scale },
+    scenes: scenes.list, presets: customPresets()
   };
 }
 
@@ -1148,11 +1164,24 @@ async function saveMix(name = mix.name) {
 async function loadMix(file) {
   if (mix.dirty && !confirmLose()) return;
   const d = await window.api.loadMix(file);
+  applyMixData(d);
+  Object.assign(mix, { name: d.name, file, dirty: false });
+  renderMixName();
+  closeMixes();
+  save();
+  toast(icon('play') + `"${escapeHtml(d.name)}" aberto · Enter toca`);
+}
+
+// aplica um mix (arquivo ou salvamento automático) no estado atual
+function applyMixData(d) {
   loopPlay(false);
   releaseLoop();
   S.bpm = d.bpm || 100;
   Engine.setBpm(S.bpm);
   const so = d.sound || {};
+  (d.presets || []).forEach(addCustomPreset);
+  scenes.list = d.scenes || [];
+  scenes.cur = -1;
   if (so.knobs) so.knobs.forEach((v, i) => setKnob(i, v));
   if (so.kit) { S.kit = so.kit; Engine.setKit(S.kit); }
   Object.assign(S, { padMode: so.padMode || S.padMode, key: so.key ?? S.key, scale: so.scale || S.scale });
@@ -1163,14 +1192,10 @@ async function loadMix(file) {
   setTracks((d.tracks || []).map(t => ({ ...t, events: (t.events || []).map(e => ({ ...e, skip: 0 })) })));
   looper.len = d.len || 0;
   looper.tracks.forEach((_, i) => drawLane(i));
-  Object.assign(mix, { name: d.name, file, dirty: false });
-  renderMixName();
   renderSteppers();
   renderPads();
   renderLoops();
-  closeMixes();
-  save();
-  toast(icon('play') + `"${escapeHtml(d.name)}" aberto · Enter toca`);
+  renderScenes();
 }
 
 function newMix() {
@@ -1180,7 +1205,11 @@ function newMix() {
   resetLooper();
   looper.undo = [];
   setTracks(Array.from({ length: 4 }, () => trackData(newTrack())));
+  scenes.list = [];
+  scenes.cur = -1;
+  renderScenes();
   Object.assign(mix, { name: '', file: null, dirty: false });
+  autosaveSoon();
   renderMixName();
   closeMixes();
 }
@@ -1356,19 +1385,21 @@ function toast(html) {
   setTimeout(() => { el.classList.add('out'); setTimeout(() => el.remove(), 220); }, 2200);
 }
 
-// ---------- início ----------
-if (S.map.knobs.every(k => !k)) S.map.knobs = structuredClone(DEFAULTS.map.knobs);
-hydrateIcons();
-renderSounds();
-renderKnobs();
-S.knobs.forEach((v, i) => Engine.set(KNOBS[i].id, v));
-Engine.setBpm(S.bpm);
-setPreset(S.preset);
-$('#key').value = S.key;
-renderSteppers();
-renderPads();
-Engine.setKit(S.kit);
-renderLoops();
-renderMixName();
-initMidi();
-document.addEventListener('pointerdown', () => Engine.resume(), { once: true });
+// ---------- início (chamado pelo studio.js, depois que tudo carregou) ----------
+function boot() {
+  if (S.map.knobs.every(k => !k)) S.map.knobs = structuredClone(DEFAULTS.map.knobs);
+  hydrateIcons();
+  renderSounds();
+  renderKnobs();
+  S.knobs.forEach((v, i) => Engine.set(KNOBS[i].id, v));
+  Engine.setBpm(S.bpm);
+  setPreset(S.preset);
+  $('#key').value = S.key;
+  renderSteppers();
+  renderPads();
+  Engine.setKit(S.kit);
+  renderLoops();
+  renderMixName();
+  initMidi();
+  document.addEventListener('pointerdown', () => Engine.resume(), { once: true });
+}

@@ -76,6 +76,38 @@ ipcMain.handle('export:audio', async (_, name, format, rate, left, right) => {
   return { file: r.filePath, bytes };
 });
 ipcMain.handle('export:reveal', (_, file) => shell.showItemInFolder(file));
+ipcMain.handle('export:pick-folder', async () => {
+  const r = await dialog.showOpenDialog(win, { title: 'Pasta para as faixas', defaultPath: app.getPath('music'), properties: ['openDirectory', 'createDirectory'] });
+  return r.canceled ? null : r.filePaths[0];
+});
+// nome de arquivo seguro no Windows (as faixas podem ter qualquer nome)
+const safeName = n => n.replace(/[<>:"/\\|?*\p{Cc}]+/gu, '').trim().slice(0, 120) || 'faixa';
+ipcMain.handle('export:audio-to', (_, dir, name, format, rate, left, right) => {
+  const file = path.join(dir, `${safeName(name)}.${format === 'mp3' ? 'mp3' : 'wav'}`);
+  writeAudio(file, left, right, rate);
+  return file;
+});
+ipcMain.handle('export:file', async (_, name, ext, bytes) => {
+  const r = await dialog.showSaveDialog(win, {
+    title: 'Salvar', defaultPath: path.join(app.getPath('music'), safeName(name)),
+    filters: [{ name: ext.toUpperCase(), extensions: [ext] }]
+  });
+  if (r.canceled || !r.filePath) return null;
+  fs.writeFileSync(r.filePath, Buffer.from(bytes));
+  return { file: r.filePath, bytes: bytes.length };
+});
+
+// ---------- salvamento automático da sessão ----------
+const autoFile = () => path.join(app.getPath('userData'), 'autosave.json');
+ipcMain.on('auto:save', (_, data) => {
+  try {
+    fs.writeFileSync(autoFile() + '.tmp', JSON.stringify(data));
+    fs.renameSync(autoFile() + '.tmp', autoFile());
+  } catch {}
+});
+ipcMain.handle('auto:load', () => {
+  try { return JSON.parse(fs.readFileSync(autoFile(), 'utf8')); } catch { return null; }
+});
 
 app.on('second-instance', () => {
   if (!win) return;

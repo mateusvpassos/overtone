@@ -182,7 +182,9 @@ const Engine = (() => {
   const relMul = () => 2 ** ((p.release - .5) * 6);
   const clampF = f => Math.max(30, Math.min(18000, f));
 
+  const buses = new Set();
   function apply() {
+    for (const b of buses) b.sends();
     const t = ctx.currentTime;
     master.gain.setTargetAtTime(p.volume ** 1.6, t, .02);
     revSend.gain.setTargetAtTime(p.reverb * .9, t, .03);
@@ -459,10 +461,29 @@ const Engine = (() => {
       return { left, right, rate: ctx.sampleRate };
     },
     // canal de volume de uma faixa de loop (síntese, bateria e bateria lo-fi passam por ele)
-    bus(vol = 1) {
-      const mk = dest => { const g = ctx.createGain(); g.gain.value = vol; g.connect(dest); return g; };
-      const b = { synth: mk(synthBus), drum: mk(drumBus), lofi: mk(lofiIn) };
-      b.set = v => { for (const g of [b.synth, b.drum, b.lofi]) g.gain.setTargetAtTime(v, ctx.currentTime, .02); };
+    // síntese: volume → pan → seco no mestre + envios próprios de reverb/delay (fx = quanto de efeito)
+    // bateria: volume → pan → barramento da bateria
+    bus(vol = 1, pan = 0, fx = 1) {
+      const g = () => ctx.createGain();
+      const b = { synth: g(), drum: g(), lofi: g(), sp: ctx.createStereoPanner(), dp: ctx.createStereoPanner(), rev: g(), del: g(), fx };
+      b.synth.connect(b.sp);
+      b.sp.connect(master);
+      b.sp.connect(b.rev).connect(reverb);
+      b.sp.connect(b.del).connect(delay);
+      b.drum.connect(b.dp).connect(drumBus);
+      b.lofi.connect(lofiIn);
+      b.set = v => { for (const n of [b.synth, b.drum, b.lofi]) n.gain.setTargetAtTime(v, ctx.currentTime, .02); };
+      b.setPan = v => { b.sp.pan.setTargetAtTime(v, ctx.currentTime, .02); b.dp.pan.setTargetAtTime(v, ctx.currentTime, .02); };
+      b.setFx = v => { b.fx = v; b.sends(); };
+      b.sends = () => {
+        b.rev.gain.setTargetAtTime(p.reverb * .9 * b.fx, ctx.currentTime, .03);
+        b.del.gain.setTargetAtTime(p.delay * .7 * b.fx, ctx.currentTime, .03);
+      };
+      b.dispose = () => { buses.delete(b); setTimeout(() => { for (const n of [b.synth, b.drum, b.lofi, b.sp, b.dp]) n.disconnect(); }, 3000); };
+      b.set(vol);
+      b.setPan(pan);
+      b.sends();
+      buses.add(b);
       return b;
     },
     setPreset(id) { currentPreset = PRESETS.find(x => x.id === id) || PRESETS[0]; currentVib = currentPreset.vib; setWheel(wheel); },

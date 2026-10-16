@@ -24,7 +24,27 @@ Toca o teclado MIDI (feito pro AMW Master25 / "MIDI KeyBoard 25A") sem abrir DAW
   - **Apagar trecho** (`Delete`): tira as notas do trecho só daquela faixa.
   - **Desfazer** (`Ctrl+Z`): volta as edições, em vários níveis.
   - `Esc` limpa a seleção.
-- **Exportar WAV/MP3:** toca o mix 1, 2, 4 ou 8 voltas gravando a saída em tempo real, com a cauda do reverb opcional. Depois pede onde salvar (pasta Músicas por padrão). Tem WAV 16-bit e MP3 192 kbps (lamejs).
+- **Exportar:**
+  - **Mix** em WAV 16-bit ou MP3 192 kbps: toca 1, 2, 4 ou 8 voltas gravando a saída em tempo real, com a cauda do reverb opcional.
+  - **Faixas separadas:** grava cada faixa sozinha, uma de cada vez, numa pasta.
+  - **MIDI (.mid):** sai na hora, com a bateria no canal 10 (General MIDI), pra abrir no FL Studio.
+- **Contagem** (`1, 2, 3, 4` ou `C`): um compasso de metrônomo antes de gravar.
+- **Quantizar:** encaixa as notas da faixa selecionada (ou do trecho selecionado) na grade de 1/4 a 1/32. Com `Shift`, encaixa só 50%.
+- **Arpejador** (`Q`): segure um acorde e ele toca as notas em sequência no BPM.
+  - Ordens: sobe, desce, sobe e desce, aleatório ou como tocou.
+  - Velocidade de 1/4 a 1/32 e 1 a 3 oitavas.
+  - **Trava** continua tocando depois de soltar.
+  - O que ele toca é gravado no loop.
+- **Cenas A–H:** guardam quais faixas tocam e os volumes. Clique troca a cena na próxima volta do loop, `Shift` grava por cima e `Alt` apaga. O modo **Cenas** dos pads troca pelas pads.
+- **Faixa** (botão de sliders): pan, quanto de reverb/delay a faixa recebe, cor e atalhos para os editores.
+- **Passos:** bateria em grade (16 passos por compasso) na faixa selecionada. Clique ou arraste para ligar, e `Shift` dá acento. Sem loop ainda, ele cria um compasso.
+- **Notas** (piano-roll):
+  - Clique no vazio cria uma nota.
+  - Arrastar move, e a borda direita muda a duração.
+  - Duplo clique ou `Delete` apaga.
+  - A roda do mouse muda a força, e `Alt` solta da grade.
+- **Meus sons** (**+ Som** ou o lápis): editor com 3 osciladores, filtro com envelope, ADSR, FM e vibrato. Vale na hora e fica salvo. Editar um som de fábrica cria uma cópia sua.
+- **Salvamento automático:** ao abrir, o app volta com a sessão como estava (faixas, cenas e sons), mesmo sem ter salvo o mix.
 - **Mod wheel** = vibrato · **Pitch bend** = ±2 semitons · **CC64** = sustain · **CC7** = volume
 - Teclado na tela (clique/arraste), detecção de acorde, osciloscópio e monitor do último sinal MIDI
 
@@ -35,7 +55,7 @@ Toca o teclado MIDI (feito pro AMW Master25 / "MIDI KeyBoard 25A") sem abrir DAW
 - **Padrão** (no painel de knobs) volta os valores dos knobs. **Resetar mapeamento** volta as ligações para o padrão.
 
 ## Atalhos (teclado do PC)
-`A`–`Ç` notas · `Z`/`X` oitava · `1`–`8` pads · `↑`/`↓` som · `R` grava no loop selecionado · `←`/`→` escolhe o loop · `Enter` toca/para · `M` metrônomo · `Espaço` parar tudo · arrastar knob com `Shift` = ajuste fino · duplo clique = padrão
+`A`–`Ç` notas · `Z`/`X` oitava · `1`–`8` pads · `↑`/`↓` som · `R` grava no loop selecionado · `←`/`→` escolhe o loop · `Enter` toca/para · `M` metrônomo · `Q` arpejador · `C` contagem · `Espaço` parar tudo · arrastar knob com `Shift` = ajuste fino · duplo clique = padrão
 
 ## Rodar
 ```bash
