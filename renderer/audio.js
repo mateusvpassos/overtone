@@ -22,6 +22,18 @@ const PRESETS = [
     osc: [{ type: 'square', gain: .3 }, { type: 'sawtooth', gain: .15, ratio: 2 }],
     filter: { f: 1600, q: 5, env: 3200, envD: .08 }, env: { a: .001, d: .4, s: .3, r: .05 }, vib: 0
   },
+  {
+    id: 'upright', cat: 'Teclas', name: 'Piano de armário', desc: 'Yamaha vertical gravado, mais íntimo', icon: 'piano', c: '#d6d3d1',
+    sampler: 'upright', gain: 2.4, osc: [], filter: { f: 15000, q: .3 }, env: { a: .001, d: 1, s: 1, r: .4 }, vib: 0
+  },
+  {
+    id: 'harpsi', cat: 'Teclas', name: 'Cravo', desc: 'Cravo flamengo gravado', icon: 'piano', c: '#eab308',
+    sampler: 'harpsi', gain: 2.2, osc: [], filter: { f: 15000, q: .3 }, env: { a: .001, d: 1, s: 1, r: .25 }, vib: 0
+  },
+  {
+    id: 'pipeorgan', cat: 'Teclas', name: 'Órgão de tubos', desc: 'Órgão de igreja gravado, sustenta', icon: 'drawbars', c: '#a78bfa',
+    sampler: 'pipeorgan', loop: true, gain: 1.9, osc: [], filter: { f: 15000, q: .3 }, env: { a: .04, d: 1, s: 1, r: .5 }, vib: 0
+  },
   // ---- gravados ----
   {
     id: 'guitar', cat: 'Gravados', name: 'Violão nylon', desc: 'Violão clássico gravado (FreePats)', icon: 'music', c: '#d6a36b',
@@ -229,6 +241,49 @@ const Engine = (() => {
   const clampF = f => Math.max(30, Math.min(18000, f));
 
   const buses = new Set();
+  // LFO único do chorus de todas as faixas
+  const chorusLfo = ctx.createOscillator();
+  chorusLfo.frequency.value = .7;
+  chorusLfo.start();
+  const shaperCurve = k => Float32Array.from({ length: 1024 }, (_, i) => Math.tanh((i / 511.5 - 1) * k) / Math.tanh(k));
+  function makeInsert() {
+    const n = {
+      input: ctx.createGain(), output: ctx.createGain(),
+      low: ctx.createBiquadFilter(), mid: ctx.createBiquadFilter(), high: ctx.createBiquadFilter(),
+      shaper: ctx.createWaveShaper(), makeup: ctx.createGain(),
+      dry: ctx.createGain(), wet: ctx.createGain(), dl: ctx.createDelay(.05), depth: ctx.createGain(),
+      comp: ctx.createDynamicsCompressor(), compOut: ctx.createGain()
+    };
+    n.low.type = 'lowshelf'; n.low.frequency.value = 220;
+    n.mid.type = 'peaking'; n.mid.frequency.value = 1100; n.mid.Q.value = .8;
+    n.high.type = 'highshelf'; n.high.frequency.value = 4200;
+    n.shaper.oversample = '2x';
+    n.dl.delayTime.value = .014;
+    n.depth.gain.value = 0;
+    chorusLfo.connect(n.depth).connect(n.dl.delayTime);
+    n.comp.ratio.value = 1; n.comp.threshold.value = 0; n.comp.attack.value = .005; n.comp.release.value = .15;
+    n.input.connect(n.low).connect(n.mid).connect(n.high).connect(n.shaper).connect(n.makeup);
+    n.makeup.connect(n.dry).connect(n.comp);
+    n.makeup.connect(n.dl).connect(n.wet).connect(n.comp);
+    n.comp.connect(n.compOut).connect(n.output);
+    n.set = (o = {}) => {
+      const t = ctx.currentTime;
+      n.low.gain.setTargetAtTime(o.low || 0, t, .02);
+      n.mid.gain.setTargetAtTime(o.mid || 0, t, .02);
+      n.high.gain.setTargetAtTime(o.high || 0, t, .02);
+      const d = o.drive || 0;
+      n.shaper.curve = d > .01 ? shaperCurve(1 + d * 14) : null;
+      n.makeup.gain.setTargetAtTime(1 / (1 + d * 1.2), t, .02);
+      const c = o.chorus || 0;
+      n.wet.gain.setTargetAtTime(c * .8, t, .02);
+      n.depth.gain.setTargetAtTime(c * .004, t, .02);
+      const k = o.comp || 0;
+      n.comp.threshold.setTargetAtTime(-k * 32, t, .02);
+      n.comp.ratio.setTargetAtTime(1 + k * 9, t, .02);
+      n.compOut.gain.setTargetAtTime(1 + k * 1.1, t, .02);
+    };
+    return n;
+  }
   function apply() {
     for (const b of buses) b.sends();
     const t = ctx.currentTime;
@@ -315,19 +370,23 @@ const Engine = (() => {
 
   // ---------- samples (piano e bateria acústica, VCSL CC0) ----------
   const SAMPLES = { inst: {}, drums: {}, rr: {} };
-  async function loadSamples(read) {
+  async function loadSamples(read, onProgress = () => {}) {
     const toBuf = async f => {
       const u8 = await read(f);
       return ctx.decodeAudioData(u8.buffer.slice(u8.byteOffset, u8.byteOffset + u8.byteLength));
     };
     const man = JSON.parse(new TextDecoder().decode(await read('samples.json')));
+    const inst0 = man.instruments || { piano: man.piano };
+    const total = Object.values(man.drums).flat().length + Object.values(inst0).flat().length;
+    let done = 0;
+    const tick = p => { onProgress(++done / total); return p; };
     const drums = {};
-    await Promise.all(Object.entries(man.drums).map(async ([id, files]) => { drums[id] = await Promise.all(files.map(toBuf)); }));
+    await Promise.all(Object.entries(man.drums).map(async ([id, files]) => { drums[id] = await Promise.all(files.map(f => toBuf(f).then(tick))); }));
     SAMPLES.drums = drums;
     const inst = man.instruments || { piano: man.piano };
     // piano primeiro (é o mais usado), depois o resto
     for (const name of ['piano', ...Object.keys(inst).filter(k => k !== 'piano')]) {
-      SAMPLES.inst[name] = await Promise.all(inst[name].map(async z => ({ ...z, buf: await toBuf(z.file) })));
+      SAMPLES.inst[name] = await Promise.all(inst[name].map(async z => ({ ...z, buf: tick(await toBuf(z.file)) })));
     }
   }
   // camada suave abaixo de vel 84; zona mais próxima da nota
@@ -340,6 +399,8 @@ const Engine = (() => {
     const src = ctx.createBufferSource();
     src.buffer = best.buf;
     src.playbackRate.value = 2 ** ((note - best.note) / 12);
+    // órgão: repete o meio do sample enquanto a tecla estiver apertada
+    if (P.loop && best.buf.duration > 1) { src.loop = true; src.loopStart = .6; src.loopEnd = best.buf.duration - .15; }
     src.detune.value = bend;
     const g = ctx.createGain();
     g.gain.value = P.gain ? (layer === 'soft' ? P.gain * .8 : P.gain) : layer === 'soft' ? 2.2 : 2.8;
@@ -557,6 +618,69 @@ const Engine = (() => {
       analyser.connect(node).connect(mute).connect(ctx.destination);
       this._cap = { node, mute, chunks };
     },
+    // microfone (sem processamento do Windows, pra não estragar instrumento)
+    async startMic() {
+      if (ctx.state !== 'running') await ctx.resume();
+      if (!this._recReady) { await ctx.audioWorklet.addModule('rec-worklet.js'); this._recReady = true; }
+      const stream = await navigator.mediaDevices.getUserMedia({ audio: { echoCancellation: false, noiseSuppression: false, autoGainControl: false } });
+      const src = ctx.createMediaStreamSource(stream);
+      const node = new AudioWorkletNode(ctx, 'rec', { numberOfInputs: 1, numberOfOutputs: 1, outputChannelCount: [2] });
+      const mute = ctx.createGain();
+      mute.gain.value = 0;
+      const meter = ctx.createAnalyser();
+      meter.fftSize = 512;
+      src.connect(meter);
+      src.connect(node).connect(mute).connect(ctx.destination);
+      const mic = { stream, src, node, mute, meter, chunks: null, t0: 0 };
+      node.port.onmessage = e => { if (mic.chunks) mic.chunks.push(e.data); };
+      this._mic = mic;
+      return mic;
+    },
+    micLevel() {
+      const m = this._mic;
+      if (!m) return 0;
+      const b = new Float32Array(m.meter.fftSize);
+      m.meter.getFloatTimeDomainData(b);
+      let pk = 0;
+      for (const v of b) pk = Math.max(pk, Math.abs(v));
+      return pk;
+    },
+    micRecord(on) {
+      const m = this._mic;
+      if (!m) return null;
+      if (on) { m.chunks = []; m.t0 = ctx.currentTime; return null; }
+      const chunks = m.chunks || [];
+      m.chunks = null;
+      const n = chunks.reduce((s, c) => s + c[0].length, 0);
+      const buf = ctx.createBuffer(2, Math.max(1, n), ctx.sampleRate);
+      let o = 0;
+      for (const [l, r] of chunks) { buf.getChannelData(0).set(l, o); buf.getChannelData(1).set(r, o); o += l.length; }
+      return buf;
+    },
+    stopMic() {
+      const m = this._mic;
+      if (!m) return;
+      this._mic = null;
+      m.node.port.onmessage = null;
+      m.stream.getTracks().forEach(t => t.stop());
+      m.src.disconnect(); m.node.disconnect(); m.mute.disconnect();
+    },
+    // toca um trecho de áudio gravado numa faixa (offset em segundos)
+    playBuffer(buf, bus, offset = 0) {
+      const s = ctx.createBufferSource();
+      s.buffer = buf;
+      s.connect(bus ? bus.synth : synthBus);
+      s.start(ctx.currentTime + .005, Math.max(0, offset));
+      return s;
+    },
+    makeBuffer(left, right, rate) {
+      const b = ctx.createBuffer(2, left.length, rate || ctx.sampleRate);
+      b.getChannelData(0).set(left);
+      b.getChannelData(1).set(right || left);
+      return b;
+    },
+    decode: ab => ctx.decodeAudioData(ab),
+    latency: () => (ctx.baseLatency || 0) + (ctx.outputLatency || 0),
     stopCapture() {
       const { node, mute, chunks } = this._cap;
       this._cap = null;
@@ -572,14 +696,20 @@ const Engine = (() => {
     // canal de volume de uma faixa de loop (síntese, bateria e bateria lo-fi passam por ele)
     // síntese: volume → pan → seco no mestre + envios próprios de reverb/delay (fx = quanto de efeito)
     // bateria: volume → pan → barramento da bateria
-    bus(vol = 1, pan = 0, fx = 1) {
+    bus(vol = 1, pan = 0, fx = 1, ins = {}) {
       const g = () => ctx.createGain();
       const b = { synth: g(), drum: g(), lofi: g(), sp: ctx.createStereoPanner(), dp: ctx.createStereoPanner(), rev: g(), del: g(), fx };
-      b.synth.connect(b.sp);
+      // efeitos de inserção da faixa (EQ, drive, chorus, compressor), um para síntese/áudio e outro para bateria
+      b.ins = [makeInsert(), makeInsert()];
+      b.synth.connect(b.ins[0].input);
+      b.ins[0].output.connect(b.sp);
+      b.drum.disconnect();
+      b.drum.connect(b.ins[1].input);
+      b.ins[1].output.connect(b.dp);
       b.sp.connect(master);
       b.sp.connect(b.rev).connect(reverb);
       b.sp.connect(b.del).connect(delay);
-      b.drum.connect(b.dp).connect(drumBus);
+      b.dp.connect(drumBus);
       b.lofi.connect(lofiIn);
       b.set = v => { for (const n of [b.synth, b.drum, b.lofi]) n.gain.setTargetAtTime(v, ctx.currentTime, .02); };
       b.setPan = v => { b.sp.pan.setTargetAtTime(v, ctx.currentTime, .02); b.dp.pan.setTargetAtTime(v, ctx.currentTime, .02); };
@@ -588,10 +718,12 @@ const Engine = (() => {
         b.rev.gain.setTargetAtTime(p.reverb * .9 * b.fx, ctx.currentTime, .03);
         b.del.gain.setTargetAtTime(p.delay * .7 * b.fx, ctx.currentTime, .03);
       };
+      b.setInsert = o => { for (const i of b.ins) i.set(o); };
       b.dispose = () => { buses.delete(b); setTimeout(() => { for (const n of [b.synth, b.drum, b.lofi, b.sp, b.dp]) n.disconnect(); }, 3000); };
       b.set(vol);
       b.setPan(pan);
       b.sends();
+      b.setInsert(ins);
       buses.add(b);
       return b;
     },

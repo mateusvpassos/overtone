@@ -1,6 +1,6 @@
 {
   "name": "overtone",
-  "version": "0.7.0",
+  "version": "0.8.0",
   "description": "Overtone — sons, pads e knobs pro teclado MIDI sem abrir DAW (Electron)",
   "main": "main.js",
   "private": true,
@@ -14,6 +14,9 @@
     "appId": "com.mateusvpassos.overtone",
     "productName": "Overtone",
     "electronDist": "node_modules/electron/dist",
+    "asarUnpack": [
+      "renderer/samples/**"
+    ],
     "files": [
       "main.js",
       "preload.js",

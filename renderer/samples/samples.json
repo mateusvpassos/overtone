@@ -1157,6 +1157,377 @@
     "layer": "hard",
     "file": "bass/39_hard.ogg"
    }
+  ],
+  "upright": [
+   {
+    "note": 12,
+    "layer": "hard",
+    "file": "upright/12_hard.ogg"
+   },
+   {
+    "note": 12,
+    "layer": "soft",
+    "file": "upright/12_soft.ogg"
+   },
+   {
+    "note": 19,
+    "layer": "hard",
+    "file": "upright/19_hard.ogg"
+   },
+   {
+    "note": 19,
+    "layer": "soft",
+    "file": "upright/19_soft.ogg"
+   },
+   {
+    "note": 24,
+    "layer": "hard",
+    "file": "upright/24_hard.ogg"
+   },
+   {
+    "note": 24,
+    "layer": "soft",
+    "file": "upright/24_soft.ogg"
+   },
+   {
+    "note": 31,
+    "layer": "hard",
+    "file": "upright/31_hard.ogg"
+   },
+   {
+    "note": 31,
+    "layer": "soft",
+    "file": "upright/31_soft.ogg"
+   },
+   {
+    "note": 36,
+    "layer": "hard",
+    "file": "upright/36_hard.ogg"
+   },
+   {
+    "note": 36,
+    "layer": "soft",
+    "file": "upright/36_soft.ogg"
+   },
+   {
+    "note": 43,
+    "layer": "hard",
+    "file": "upright/43_hard.ogg"
+   },
+   {
+    "note": 43,
+    "layer": "soft",
+    "file": "upright/43_soft.ogg"
+   },
+   {
+    "note": 48,
+    "layer": "hard",
+    "file": "upright/48_hard.ogg"
+   },
+   {
+    "note": 48,
+    "layer": "soft",
+    "file": "upright/48_soft.ogg"
+   },
+   {
+    "note": 55,
+    "layer": "hard",
+    "file": "upright/55_hard.ogg"
+   },
+   {
+    "note": 55,
+    "layer": "soft",
+    "file": "upright/55_soft.ogg"
+   },
+   {
+    "note": 60,
+    "layer": "hard",
+    "file": "upright/60_hard.ogg"
+   },
+   {
+    "note": 60,
+    "layer": "soft",
+    "file": "upright/60_soft.ogg"
+   },
+   {
+    "note": 67,
+    "layer": "hard",
+    "file": "upright/67_hard.ogg"
+   },
+   {
+    "note": 67,
+    "layer": "soft",
+    "file": "upright/67_soft.ogg"
+   },
+   {
+    "note": 72,
+    "layer": "hard",
+    "file": "upright/72_hard.ogg"
+   },
+   {
+    "note": 72,
+    "layer": "soft",
+    "file": "upright/72_soft.ogg"
+   },
+   {
+    "note": 79,
+    "layer": "hard",
+    "file": "upright/79_hard.ogg"
+   },
+   {
+    "note": 79,
+    "layer": "soft",
+    "file": "upright/79_soft.ogg"
+   },
+   {
+    "note": 84,
+    "layer": "hard",
+    "file": "upright/84_hard.ogg"
+   },
+   {
+    "note": 84,
+    "layer": "soft",
+    "file": "upright/84_soft.ogg"
+   }
+  ],
+  "pipeorgan": [
+   {
+    "note": 24,
+    "layer": "hard",
+    "file": "pipeorgan/24_hard.ogg"
+   },
+   {
+    "note": 27,
+    "layer": "hard",
+    "file": "pipeorgan/27_hard.ogg"
+   },
+   {
+    "note": 30,
+    "layer": "hard",
+    "file": "pipeorgan/30_hard.ogg"
+   },
+   {
+    "note": 33,
+    "layer": "hard",
+    "file": "pipeorgan/33_hard.ogg"
+   },
+   {
+    "note": 36,
+    "layer": "hard",
+    "file": "pipeorgan/36_hard.ogg"
+   },
+   {
+    "note": 39,
+    "layer": "hard",
+    "file": "pipeorgan/39_hard.ogg"
+   },
+   {
+    "note": 42,
+    "layer": "hard",
+    "file": "pipeorgan/42_hard.ogg"
+   },
+   {
+    "note": 45,
+    "layer": "hard",
+    "file": "pipeorgan/45_hard.ogg"
+   },
+   {
+    "note": 48,
+    "layer": "hard",
+    "file": "pipeorgan/48_hard.ogg"
+   },
+   {
+    "note": 51,
+    "layer": "hard",
+    "file": "pipeorgan/51_hard.ogg"
+   },
+   {
+    "note": 54,
+    "layer": "hard",
+    "file": "pipeorgan/54_hard.ogg"
+   },
+   {
+    "note": 57,
+    "layer": "hard",
+    "file": "pipeorgan/57_hard.ogg"
+   },
+   {
+    "note": 60,
+    "layer": "hard",
+    "file": "pipeorgan/60_hard.ogg"
+   },
+   {
+    "note": 63,
+    "layer": "hard",
+    "file": "pipeorgan/63_hard.ogg"
+   },
+   {
+    "note": 66,
+    "layer": "hard",
+    "file": "pipeorgan/66_hard.ogg"
+   },
+   {
+    "note": 69,
+    "layer": "hard",
+    "file": "pipeorgan/69_hard.ogg"
+   },
+   {
+    "note": 72,
+    "layer": "hard",
+    "file": "pipeorgan/72_hard.ogg"
+   },
+   {
+    "note": 75,
+    "layer": "hard",
+    "file": "pipeorgan/75_hard.ogg"
+   },
+   {
+    "note": 78,
+    "layer": "hard",
+    "file": "pipeorgan/78_hard.ogg"
+   },
+   {
+    "note": 81,
+    "layer": "hard",
+    "file": "pipeorgan/81_hard.ogg"
+   },
+   {
+    "note": 84,
+    "layer": "hard",
+    "file": "pipeorgan/84_hard.ogg"
+   }
+  ],
+  "harpsi": [
+   {
+    "note": 30,
+    "layer": "hard",
+    "file": "harpsi/30_hard.ogg"
+   },
+   {
+    "note": 32,
+    "layer": "hard",
+    "file": "harpsi/32_hard.ogg"
+   },
+   {
+    "note": 34,
+    "layer": "hard",
+    "file": "harpsi/34_hard.ogg"
+   },
+   {
+    "note": 37,
+    "layer": "hard",
+    "file": "harpsi/37_hard.ogg"
+   },
+   {
+    "note": 40,
+    "layer": "hard",
+    "file": "harpsi/40_hard.ogg"
+   },
+   {
+    "note": 42,
+    "layer": "hard",
+    "file": "harpsi/42_hard.ogg"
+   },
+   {
+    "note": 44,
+    "layer": "hard",
+    "file": "harpsi/44_hard.ogg"
+   },
+   {
+    "note": 46,
+    "layer": "hard",
+    "file": "harpsi/46_hard.ogg"
+   },
+   {
+    "note": 49,
+    "layer": "hard",
+    "file": "harpsi/49_hard.ogg"
+   },
+   {
+    "note": 52,
+    "layer": "hard",
+    "file": "harpsi/52_hard.ogg"
+   },
+   {
+    "note": 54,
+    "layer": "hard",
+    "file": "harpsi/54_hard.ogg"
+   },
+   {
+    "note": 56,
+    "layer": "hard",
+    "file": "harpsi/56_hard.ogg"
+   },
+   {
+    "note": 57,
+    "layer": "hard",
+    "file": "harpsi/57_hard.ogg"
+   },
+   {
+    "note": 61,
+    "layer": "hard",
+    "file": "harpsi/61_hard.ogg"
+   },
+   {
+    "note": 62,
+    "layer": "hard",
+    "file": "harpsi/62_hard.ogg"
+   },
+   {
+    "note": 64,
+    "layer": "hard",
+    "file": "harpsi/64_hard.ogg"
+   },
+   {
+    "note": 66,
+    "layer": "hard",
+    "file": "harpsi/66_hard.ogg"
+   },
+   {
+    "note": 68,
+    "layer": "hard",
+    "file": "harpsi/68_hard.ogg"
+   },
+   {
+    "note": 70,
+    "layer": "hard",
+    "file": "harpsi/70_hard.ogg"
+   },
+   {
+    "note": 72,
+    "layer": "hard",
+    "file": "harpsi/72_hard.ogg"
+   },
+   {
+    "note": 74,
+    "layer": "hard",
+    "file": "harpsi/74_hard.ogg"
+   },
+   {
+    "note": 76,
+    "layer": "hard",
+    "file": "harpsi/76_hard.ogg"
+   },
+   {
+    "note": 78,
+    "layer": "hard",
+    "file": "harpsi/78_hard.ogg"
+   },
+   {
+    "note": 80,
+    "layer": "hard",
+    "file": "harpsi/80_hard.ogg"
+   },
+   {
+    "note": 82,
+    "layer": "hard",
+    "file": "harpsi/82_hard.ogg"
+   },
+   {
+    "note": 84,
+    "layer": "hard",
+    "file": "harpsi/84_hard.ogg"
+   }
   ]
  }
 }

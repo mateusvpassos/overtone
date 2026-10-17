@@ -923,12 +923,21 @@ window.addEventListener('keydown', e => {
   if (e.code === 'Escape') for (const id of ['#roll-modal', '#seq-modal', '#synth-modal']) closeModal(id);
 });
 
-$('#q-grid').value = S.qGrid;
-boot();
-Engine.loadSamples(window.api.readSample)
-  .then(() => { document.querySelector('.sound[data-id="grand"] .ds')?.replaceChildren('Steinway gravado, 2 camadas de força'); })
-  .catch(e => { console.error(e); toast(icon('x') + 'Não consegui carregar o piano/bateria gravados'); });
-renderArp();
-renderCount();
-renderScenes();
-restoreAutosave();
+// início (chamado pelo extras.js, que carrega por último)
+function studioStart() {
+  $('#q-grid').value = S.qGrid;
+  boot();
+  // tela de carregando sai assim que a interface está montada; os sons gravados chegam em segundo plano
+  requestAnimationFrame(() => {
+    $('#splash').classList.add('out');
+    setTimeout(() => $('#splash').remove(), 350);
+  });
+  $('#load-pill').classList.remove('hidden');
+  Engine.loadSamples(window.api.readSample, p => { $('#load-text').textContent = `Carregando sons ${Math.round(p * 100)}%`; })
+    .then(() => { $('#load-pill').classList.add('hidden'); })
+    .catch(e => { console.error(e); $('#load-pill').classList.add('hidden'); toast(icon('x') + 'Não consegui carregar os sons gravados'); });
+  renderArp();
+  renderCount();
+  renderScenes();
+  restoreAutosave();
+}

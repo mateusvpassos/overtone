@@ -535,8 +535,9 @@ function monitor(text) {
 }
 
 function onMidi(e) {
-  const [st, d1 = 0, d2 = 0] = e.data;
-  if (st >= 0xF0) return; // clock / sysex
+  let [st, d1 = 0, d2 = 0] = e.data;
+  if (st >= 0xF0) return clockIn(st); // clock / sysex
+  if ((st & 0xF0) === 0x90 && d2 > 0) d2 = velCurve(d2);
   const cmd = st & 0xF0, ch = st & 0x0F;
   const isOn = cmd === 0x90 && d2 > 0;
   const isOff = cmd === 0x80 || (cmd === 0x90 && d2 === 0);
@@ -658,8 +659,11 @@ let trackSeq = 0;
 function newTrack(o = {}) {
   const id = o.id || ++trackSeq;
   trackSeq = Math.max(trackSeq, id);
-  const vol = o.vol ?? .8, pan = o.pan ?? 0, fx = o.fx ?? 1;
-  return { id, c: o.c || LOOP_COLORS[(id - 1) % LOOP_COLORS.length], name: o.name || 'Loop ' + id, events: o.events || [], mute: !!o.mute, vol, pan, fx, bus: Engine.bus(vol ** 1.5, pan, fx) };
+  const vol = o.vol ?? .8, pan = o.pan ?? 0, fx = o.fx ?? 1, ins = o.ins || {};
+  return {
+    id, c: o.c || LOOP_COLORS[(id - 1) % LOOP_COLORS.length], name: o.name || 'Loop ' + id, events: o.events || [], mute: !!o.mute,
+    vol, pan, fx, ins, audioFile: o.audioFile || null, audio: o.audio || null, bus: Engine.bus(vol ** 1.5, pan, fx, ins)
+  };
 }
 const looper = {
   len: 0, start: 0, last: 0, playing: false, rec: null, waiting: false, sel: 0, timer: null, range: null, undo: [],
@@ -1002,7 +1006,7 @@ function fromBlocks(blocks) {
   });
   return ev.sort((x, y) => x.t - y.t);
 }
-const trackData = t => ({ id: t.id, name: t.name, c: t.c, vol: t.vol, pan: t.pan, fx: t.fx, mute: t.mute, events: t.events.map(e => ({ ...e, key: undefined })) });
+const trackData = t => ({ id: t.id, name: t.name, c: t.c, vol: t.vol, pan: t.pan, fx: t.fx, ins: { ...t.ins }, audioFile: t.audioFile || null, audio: t.audio || null, mute: t.mute, events: t.events.map(e => ({ ...e, key: undefined })) });
 function snapshot() {
   markDirty();
   looper.undo.push({ len: looper.len, tracks: looper.tracks.map(trackData) });
@@ -1067,6 +1071,7 @@ function setTracks(list) {
     t.bus.set(t.vol ** 1.5);
     t.bus.setPan(t.pan || 0);
     t.bus.setFx(t.fx ?? 1);
+    t.bus.setInsert(t.ins || {});
     old.delete(d.id);
     return t;
   });
@@ -1358,7 +1363,7 @@ $('#x-reveal').addEventListener('click', () => exp.last && window.api.reveal(exp
     const w = cv.width, h = cv.height;
     g.clearRect(0, 0, w, h);
     const grad = g.createLinearGradient(0, 0, w, 0);
-    grad.addColorStop(0, '#5ef0b0'); grad.addColorStop(.5, '#22c3e6'); grad.addColorStop(1, '#6f8bff');
+    grad.addColorStop(0, '#ff9dbf'); grad.addColorStop(.5, '#ec4fc6'); grad.addColorStop(1, '#d23fb0');
     g.strokeStyle = grad;
     g.lineWidth = 2;
     g.beginPath();

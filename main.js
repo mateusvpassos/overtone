@@ -16,7 +16,7 @@ let win;
 function createWindow() {
   win = new BrowserWindow({
     width: 1280, height: 900, minWidth: 1100, minHeight: 760,
-    title: 'Overtone', icon: path.join(__dirname, 'renderer', 'icon.png'), show: false,
+    title: 'Overtone', icon: path.join(__dirname, 'renderer', 'icon.png'), show: true,
     backgroundColor: '#0d0e13',
     titleBarStyle: 'hidden',
     titleBarOverlay: { color: '#0d0e13', symbolColor: '#8b90a4', height: 40 },
@@ -24,7 +24,6 @@ function createWindow() {
   });
   win.removeMenu();
   win.loadFile(path.join(__dirname, 'renderer', 'index.html'));
-  win.once('ready-to-show', () => win.show());
 }
 
 // ---------- mixes: um .json por mix em %APPDATA%\Overtone\mixes ----------
@@ -51,9 +50,30 @@ ipcMain.handle('mix:list', () => fs.readdirSync(mixDir())
   .filter(Boolean)
   .sort((a, b) => (b.saved || '').localeCompare(a.saved || '')));
 
+// versões: guarda o arquivo anterior antes de salvar por cima (até 25 por mix)
+const verDir = file => path.join(mixDir(), '.versoes', path.basename(file, '.json'));
+ipcMain.handle('mix:versions', (_, file) => {
+  const d = verDir(file);
+  if (!fs.existsSync(d)) return [];
+  return fs.readdirSync(d).filter(f => f.endsWith('.json')).sort().reverse().map(f => {
+    try {
+      const j = JSON.parse(fs.readFileSync(path.join(d, f), 'utf8'));
+      return { id: f, saved: j.saved, len: j.len, tracks: (j.tracks || []).filter(t => t.events?.length || t.audioFile).length };
+    } catch { return null; }
+  }).filter(Boolean);
+});
+ipcMain.handle('mix:version-load', (_, file, id) => JSON.parse(fs.readFileSync(path.join(verDir(file), path.basename(id)), 'utf8')));
+
 ipcMain.handle('mix:save', (_, name, data) => {
   const file = slug(name) + '.json';
   const f = path.join(mixDir(), file);
+  if (fs.existsSync(f)) {
+    const d = verDir(file);
+    fs.mkdirSync(d, { recursive: true });
+    fs.copyFileSync(f, path.join(d, new Date().toISOString().replace(/[:.]/g, '-') + '.json'));
+    const old = fs.readdirSync(d).filter(x => x.endsWith('.json')).sort();
+    for (const x of old.slice(0, Math.max(0, old.length - 25))) fs.rmSync(path.join(d, x));
+  }
   fs.writeFileSync(f + '.tmp', JSON.stringify({ ...data, name, saved: new Date().toISOString() }));
   fs.renameSync(f + '.tmp', f);
   return file;
@@ -105,6 +125,23 @@ ipcMain.handle('sample:read', (_, file) => {
   return fs.readFileSync(f);
 });
 
+// ---------- áudio gravado do microfone (%APPDATA%\Overtone\audio) ----------
+const audioDir = () => { const d = path.join(app.getPath('userData'), 'audio'); fs.mkdirSync(d, { recursive: true }); return d; };
+ipcMain.handle('audio:save', (_, rate, left, right) => {
+  const name = `mic-${Date.now().toString(36)}.wav`;
+  writeAudio(path.join(audioDir(), name), left, right, rate);
+  return name;
+});
+ipcMain.handle('audio:read', (_, name) => fs.readFileSync(path.join(audioDir(), path.basename(name))));
+
+// ---------- modo aprender e modo show ----------
+ipcMain.handle('learn:open-mid', async () => {
+  const r = await dialog.showOpenDialog(win, { title: 'Abrir música MIDI', filters: [{ name: 'MIDI', extensions: ['mid', 'midi'] }], properties: ['openFile'] });
+  if (r.canceled || !r.filePaths[0]) return null;
+  return { name: path.basename(r.filePaths[0]), bytes: fs.readFileSync(r.filePaths[0]) };
+});
+ipcMain.handle('win:fullscreen', (_, on) => win.setFullScreen(!!on));
+
 // ---------- salvamento automático da sessão ----------
 const autoFile = () => path.join(app.getPath('userData'), 'autosave.json');
 ipcMain.on('auto:save', (_, data) => {
@@ -125,7 +162,7 @@ app.on('second-instance', () => {
 
 app.whenReady().then(() => {
   // Web MIDI precisa de permissão; só a página local pede
-  const allow = p => p === 'midi' || p === 'midiSysex';
+  const allow = p => p === 'midi' || p === 'midiSysex' || p === 'media';
   session.defaultSession.setPermissionRequestHandler((_, p, cb) => cb(allow(p)));
   session.defaultSession.setPermissionCheckHandler((_, p) => allow(p));
   createWindow();

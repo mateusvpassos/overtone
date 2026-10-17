@@ -5,17 +5,20 @@
   <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data:; font-src 'self'">
   <title>Overtone</title>
   <link rel="stylesheet" href="style.css">
-  <script src="icons.js"></script>
-  <script src="audio.js"></script>
 </head>
 <body>
+  <div id="splash"><div class="sp-box"><img src="icon.png" alt=""><b>Overtone</b><span id="sp-text">Abrindo…</span><i class="sp-bar"><i></i></i></div></div>
   <header id="titlebar">
     <div class="brand"><img src="icon.png" alt=""> Overtone</div>
     <div id="device" class="pill" title="Teclados MIDI conectados"><span class="dot"></span><span id="device-name">Procurando teclado…</span></div>
+    <div id="load-pill" class="pill hidden" title="Carregando os sons gravados (piano, bateria…)"><span class="spin"></span><span id="load-text">Carregando sons…</span></div>
     <div class="spacer"></div>
+    <button id="btn-learn" class="ghost" title="Aprender música, acordes e escalas"><i data-icon="school"></i>Aprender</button>
+    <button id="btn-show" class="ghost" title="Modo show: tela cheia pra tocar ao vivo (F11)"><i data-icon="maximize"></i>Show</button>
     <button id="btn-setup" class="ghost" title="Assistente: gire cada knob e bata em cada pad, na ordem"><i data-icon="knob"></i>Configurar controles</button>
     <button id="btn-map" class="ghost" title="Clique num knob ou pad e mexa no controle do teclado (Esc sai)"><i data-icon="link"></i>Mapear</button>
     <button id="btn-panic" class="ghost" title="Corta todas as notas (Espaço)"><i data-icon="mute"></i>Parar tudo</button>
+    <button id="btn-settings" class="icon-btn ghost" title="Ajustes: toque, metrônomo, swing, MIDI clock"><i data-icon="gear"></i></button>
   </header>
 
   <main id="workspace">
@@ -110,6 +113,7 @@
           <button id="e-keep" class="small-btn" title="O trecho vira o loop inteiro (todas as faixas)"><i data-icon="scissors"></i>Manter só</button>
           <button id="e-cut" class="small-btn" title="Apaga as notas do trecho nesta faixa (Delete)"><i data-icon="eraser"></i>Apagar</button>
           <button id="e-undo" class="small-btn ghost" title="Desfazer (Ctrl+Z)"><i data-icon="undo"></i>Desfazer</button>
+          <button id="e-redo" class="small-btn ghost hidden" title="Refazer (Ctrl+Y)"><i data-icon="redo"></i>Refazer</button>
         </div>
         <span class="spacer"></span>
         <span class="lbl" title="Clique toca a cena · Shift+clique grava as faixas ligadas agora · Alt+clique apaga">Cenas</span>
@@ -123,6 +127,13 @@
       <div class="panel-head">
         <div class="now"><span id="now-note">—</span><span id="now-chord" class="muted"></span></div>
         <span class="spacer"></span>
+        <span class="lbl" title="Teclas fora da escala viram a nota mais próxima dela">Escala</span>
+        <select id="lock-scale" title="Escala travada">
+          <option value="off">livre</option><option value="maior">maior</option><option value="menor">menor</option>
+          <option value="pentamaior">pentatônica maior</option><option value="pentamenor">pentatônica menor</option>
+          <option value="blues">blues</option><option value="dorico">dórico</option><option value="mixolidio">mixolídio</option>
+        </select>
+        <select id="lock-root" title="Tom da escala"></select>
         <span class="monitor mono" id="monitor">aguardando sinal…</span>
       </div>
       <div id="keyboard"></div>
@@ -185,8 +196,10 @@
     <div class="pop-head"><span class="l-dot"></span><b id="tp-name"></b></div>
     <label class="pop-row"><span>Pan</span><input type="range" id="tp-pan" min="-1" max="1" step="0.01" title="Duplo clique centraliza"><em id="tp-pan-v" class="mono"></em></label>
     <label class="pop-row"><span>Efeito</span><input type="range" id="tp-fx" min="0" max="1.5" step="0.01" title="Quanto de reverb/delay a faixa recebe"><em id="tp-fx-v" class="mono"></em></label>
+    <div id="tp-ins" class="tp-ins"></div>
     <div class="pop-colors" id="tp-colors"></div>
     <div class="pop-acts">
+      <button class="small-btn" data-a="mic" id="tp-mic"><i data-icon="mic"></i>Microfone</button>
       <button class="small-btn" data-a="quant"><i data-icon="grid"></i>Quantizar</button>
       <button class="small-btn" data-a="roll"><i data-icon="piano"></i>Notas</button>
       <button class="small-btn" data-a="seq"><i data-icon="drum"></i>Passos</button>
@@ -231,8 +244,60 @@
       <div class="modal-foot muted small">Toque no teclado enquanto mexe — as mudanças valem na hora e ficam salvas em "Meus sons".</div>
     </div>
   </div>
+  <div id="settings" class="pop set hidden">
+    <div class="pop-head"><b>Ajustes</b></div>
+    <label class="pop-row wide"><span>Toque</span>
+      <select id="set-vel" title="Sensibilidade das teclas"><option value="suave">suave (forte fácil)</option><option value="normal">normal</option><option value="firme">firme</option><option value="fixa">força fixa</option></select></label>
+    <label class="pop-row wide"><span>Metrônomo</span>
+      <select id="set-sub"><option value="1">semínimas</option><option value="2">colcheias</option><option value="3">tercinas</option><option value="4">semicolcheias</option></select></label>
+    <label class="pop-row"><span>Swing</span><input type="range" id="set-swing" min="0" max="0.6" step="0.01" title="Atrasa as notas fora do tempo (quantizar e arpejador)"><em id="set-swing-v" class="mono"></em></label>
+    <label class="pop-row wide"><span>MIDI clock</span>
+      <select id="set-clock" title="Sincronizar com outro app/aparelho"><option value="off">desligado</option><option value="in">seguir de fora (BPM, play, stop)</option><option value="out">enviar o nosso</option></select></label>
+  </div>
+
+  <div id="show" class="hidden">
+    <div class="sh-top">
+      <div><div class="sh-mix" id="sh-mix"></div><div class="sh-sound" id="sh-sound"></div></div>
+      <span class="spacer"></span>
+      <div class="sh-bpm" id="sh-bpm-box"><button data-d="-5" class="icon-btn">−</button><b id="sh-bpm"></b><small>BPM</small><button data-d="5" class="icon-btn">+</button></div>
+      <button id="sh-metro" class="icon-btn" title="Metrônomo"><i data-icon="metronome" data-size="22"></i></button>
+      <span id="sh-beat"></span>
+      <button id="sh-exit" class="ghost" title="Sair (Esc)"><i data-icon="x"></i>Sair</button>
+    </div>
+    <div class="sh-mid">
+      <div id="sh-ring"><button id="sh-play"></button></div>
+      <div id="sh-scenes"></div>
+    </div>
+    <div id="sh-tracks"></div>
+  </div>
+
+  <div id="learn-modal" class="modal-wrap learn-wrap hidden">
+    <div class="modal panel learn">
+      <div class="panel-head"><h2><i data-icon="school"></i>Aprender</h2>
+        <div class="seg small" id="learn-tabs"><button data-t="song">Música (.mid)</button><button data-t="chords">Acordes</button><button data-t="scale">Escala</button></div>
+        <label class="chk" title="Vale qualquer oitava (o teclado tem só 25 teclas)"><input type="checkbox" id="learn-oct">qualquer oitava</label>
+        <span class="spacer"></span>
+        <button id="learn-stop" class="icon-btn ghost m-close"><i data-icon="x"></i></button></div>
+      <div id="learn-song" class="learn-song">
+        <button id="learn-open" class="small-btn"><i data-icon="folder"></i>Abrir .mid</button><span id="learn-file" class="muted small"></span>
+        <div id="learn-tracks"></div>
+      </div>
+      <div class="learn-main">
+        <div id="learn-step"></div>
+        <div id="learn-next"></div>
+        <div class="x-track"><span id="learn-bar"></span></div>
+        <div class="learn-foot"><span id="learn-stats" class="muted small mono"></span><span class="spacer"></span>
+          <button id="learn-listen" class="small-btn" title="Toca os próximos passos"><i data-icon="volume"></i>Ouvir</button>
+          <button id="learn-skip" class="small-btn ghost">Pular</button>
+          <button id="learn-restart" class="small-btn ghost"><i data-icon="undo"></i>Recomeçar</button></div>
+      </div>
+    </div>
+  </div>
   <div id="toasts"></div>
+  <script src="icons.js"></script>
+  <script src="audio.js"></script>
   <script src="app.js"></script>
   <script src="studio.js"></script>
+  <script src="extras.js"></script>
 </body>
 </html>

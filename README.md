@@ -3,8 +3,8 @@
 Toca o teclado MIDI (feito pro AMW Master25 / "MIDI KeyBoard 25A") sem abrir DAW. Electron + Web MIDI + WebAudio, sem samples. Mesma família visual do Kino, Strata e Lembreme.
 
 ## Recursos
-- **24 sons** em 6 grupos:
-  - Teclas: **piano de cauda gravado** (Steinway, 2 camadas de força), piano elétrico, órgão, clavinet
+- **27 sons** em 6 grupos:
+  - Teclas: **piano de cauda gravado** (Steinway, 2 camadas de força), piano de armário, cravo, órgão de tubos, piano elétrico, órgão, clavinet
   - Gravados: violão nylon, baixo elétrico, vibrafone, harpa de concerto, sax tenor
   - Synth: lead, supersaw, pad, pluck, 8-bit
   - Baixo: baixo, acid (303), sub 808
@@ -46,6 +46,23 @@ Toca o teclado MIDI (feito pro AMW Master25 / "MIDI KeyBoard 25A") sem abrir DAW
   - A roda do mouse muda a força, e `Alt` solta da grade.
 - **Meus sons** (**+ Som** ou o lápis): editor com 3 osciladores, filtro com envelope, ADSR, FM e vibrato. Vale na hora e fica salvo. Editar um som de fábrica cria uma cópia sua.
 - **Salvamento automático:** ao abrir, o app volta com a sessão como estava (faixas, cenas e sons), mesmo sem ter salvo o mix.
+- **Abrir rápido:** a janela aparece na hora com uma tela de carregando, e os sons gravados carregam em segundo plano (o indicador fica na barra de título).
+- **Ajustes** (engrenagem):
+  - **Toque:** suave, normal, firme ou força fixa.
+  - **Metrônomo:** semínimas, colcheias, tercinas ou semicolcheias.
+  - **Swing:** vale no quantizar e no arpejador.
+  - **MIDI clock:** segue o BPM/play/stop de outro app ou envia o nosso.
+- **Escala travada** (acima do teclado da tela): com maior, menor, pentatônicas, blues, dórico ou mixolídio, toda tecla vira uma nota da escala. As teclas fora da escala ficam apagadas.
+- **Efeitos por faixa** (botão de sliders): EQ de 3 bandas, drive, chorus e compressor, além de pan e envio de reverb/delay.
+- **Microfone numa faixa:** arme pelo botão de sliders da faixa. Ele grava a próxima volta inteira do loop, compensa a latência e mostra o nível. O áudio fica em `%APPDATA%\Overtone\audio`.
+- **Refazer** (`Ctrl+Y`) e **versões**: cada vez que você salva por cima, a versão anterior fica guardada (até 25). Ela aparece no botão de relógio da lista de mixes.
+- **Modo show** (`F11`): tela cheia com play grande, progresso do loop, cenas grandes, mudo das faixas, BPM e batida do metrônomo.
+- **Aprender:**
+  - **Música:** abra um `.mid`, escolha as trilhas e toque.
+  - **Acordes:** acordes aleatórios no tom dos pads.
+  - **Escala:** a escala do tom, subindo e descendo.
+
+  Ele espera você acertar, acende as teclas certas no teclado da tela, conta acertos/erros e tem **Ouvir** para escutar o trecho.
 - **Mod wheel** = vibrato · **Pitch bend** = ±2 semitons · **CC64** = sustain · **CC7** = volume
 - Teclado na tela (clique/arraste), detecção de acorde, osciloscópio e monitor do último sinal MIDI
 

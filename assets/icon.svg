@@ -4,10 +4,10 @@
       <stop offset="0" stop-color="#262a40"/><stop offset="1" stop-color="#101119"/>
     </linearGradient>
     <linearGradient id="g" gradientUnits="userSpaceOnUse" x1="130" y1="120" x2="400" y2="400">
-      <stop offset="0" stop-color="#5ef0b0"/><stop offset=".5" stop-color="#22c3e6"/><stop offset="1" stop-color="#6f8bff"/>
+      <stop offset="0" stop-color="#ff9dbf"/><stop offset=".5" stop-color="#ec4fc6"/><stop offset="1" stop-color="#d23fb0"/>
     </linearGradient>
     <radialGradient id="glow" cx=".5" cy=".5" r=".5">
-      <stop offset="0" stop-color="#22c3e6" stop-opacity=".32"/><stop offset="1" stop-color="#22c3e6" stop-opacity="0"/>
+      <stop offset="0" stop-color="#ec4fc6" stop-opacity=".32"/><stop offset="1" stop-color="#ec4fc6" stop-opacity="0"/>
     </radialGradient>
   </defs>
   <rect x="16" y="16" width="480" height="480" rx="112" fill="url(#bg)"/>

@@ -13,5 +13,11 @@ contextBridge.exposeInMainWorld('api', {
   saveFile: (name, ext, bytes) => ipcRenderer.invoke('export:file', name, ext, bytes),
   autosave: data => ipcRenderer.send('auto:save', data),
   autosaveLoad: () => ipcRenderer.invoke('auto:load'),
-  readSample: file => ipcRenderer.invoke('sample:read', file)
+  readSample: file => ipcRenderer.invoke('sample:read', file),
+  saveAudio: (rate, left, right) => ipcRenderer.invoke('audio:save', rate, left, right),
+  readAudio: name => ipcRenderer.invoke('audio:read', name),
+  openMidi: () => ipcRenderer.invoke('learn:open-mid'),
+  setFullscreen: on => ipcRenderer.invoke('win:fullscreen', on),
+  mixVersions: file => ipcRenderer.invoke('mix:versions', file),
+  mixVersionLoad: (file, id) => ipcRenderer.invoke('mix:version-load', file, id)
 });
