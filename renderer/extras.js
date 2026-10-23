@@ -61,6 +61,16 @@ metroTick = function () {
 if (metro.on) toggleMetro(true);
 
 // =====================================================================
+// tamanho do teclado da tela
+// =====================================================================
+S.kbKeys ??= 25;
+S.kbHeight ??= 'm';
+$('#kb-keys').value = S.kbKeys;
+$('#kb-height').value = S.kbHeight;
+$('#kb-keys').addEventListener('change', e => { S.kbKeys = +e.target.value; renderKeyboard(); save(); });
+$('#kb-height').addEventListener('change', e => { S.kbHeight = e.target.value; renderKeyboard(); save(); });
+
+// =====================================================================
 // escala travada: teclas fora da escala viram a nota da escala mais próxima
 // =====================================================================
 const LOCK_SCALES = {

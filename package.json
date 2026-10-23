@@ -1,6 +1,6 @@
 {
   "name": "overtone",
-  "version": "0.8.0",
+  "version": "0.8.1",
   "description": "Overtone — sons, pads e knobs pro teclado MIDI sem abrir DAW (Electron)",
   "main": "main.js",
   "private": true,

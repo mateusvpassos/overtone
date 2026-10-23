@@ -52,6 +52,7 @@ Toca o teclado MIDI (feito pro AMW Master25 / "MIDI KeyBoard 25A") sem abrir DAW
   - **Metrônomo:** semínimas, colcheias, tercinas ou semicolcheias.
   - **Swing:** vale no quantizar e no arpejador.
   - **MIDI clock:** segue o BPM/play/stop de outro app ou envia o nosso.
+- **Teclado da tela:** mostra 25, 37, 49, 61 ou 88 teclas e tem altura baixa, média ou alta (acima do teclado). A oitava move a faixa.
 - **Escala travada** (acima do teclado da tela): com maior, menor, pentatônicas, blues, dórico ou mixolídio, toda tecla vira uma nota da escala. As teclas fora da escala ficam apagadas.
 - **Efeitos por faixa** (botão de sliders): EQ de 3 bandas, drive, chorus e compressor, além de pan e envio de reverb/delay.
 - **Microfone numa faixa:** arme pelo botão de sliders da faixa. Ele grava a próxima volta inteira do loop, compensa a latência e mostra o nível. O áudio fica em `%APPDATA%\Overtone\audio`.

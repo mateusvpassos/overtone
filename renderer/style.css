@@ -303,6 +303,9 @@ select:focus { border-color: var(--accent); }
 .monitor { font-size: 11px; color: var(--dim); }
 .monitor.fresh { color: var(--accent-text); }
 #keyboard { position: relative; height: 118px; margin: 12px 14px 0; }
+#keyboard { transition: height .15s; }
+#keyboard.dense .wk span { font-size: 8px; bottom: 5px; }
+#keyboard.dense .wk { border-radius: 0 0 4px 4px; }
 .wk, .bk { position: absolute; top: 0; cursor: pointer; transition: background .04s; }
 .wk {
   height: 100%; border-radius: 0 0 7px 7px;

@@ -331,17 +331,28 @@ $('#scale').addEventListener('click', e => {
 
 // ---------- teclado na tela ----------
 let viewBase = 48;
+// faixa de teclas da tela: 25 = C3–C5 (igual ao Master25); maiores abrem pros dois lados; 88 = piano inteiro
+function keyRange() {
+  const keys = S.kbKeys || 25;
+  if (keys === 88) return [21, 108];
+  const oct = (keys - 1) / 12;
+  const lo = Math.max(0, Math.min(127 - keys + 1, 60 - Math.floor(oct / 2) * 12 + S.oct * 12));
+  return [lo, lo + keys - 1];
+}
 function renderKeyboard() {
-  viewBase = 48 + S.oct * 12;
+  const [lo, hi] = keyRange();
+  viewBase = lo;
   const kb = $('#keyboard');
+  kb.style.height = ({ p: 84, m: 118, g: 160 })[S.kbHeight || 'm'] + 'px';
+  kb.classList.toggle('dense', hi - lo > 50);
   const whites = [];
-  for (let n = viewBase; n <= viewBase + 24; n++) if (![1, 3, 6, 8, 10].includes(n % 12)) whites.push(n);
+  for (let n = lo; n <= hi; n++) if (![1, 3, 6, 8, 10].includes(n % 12)) whites.push(n);
   const w = 100 / whites.length;
   let html = '';
   whites.forEach((n, i) => {
     html += `<div class="wk" data-n="${n}" style="left:${i * w}%;width:${w}%">${n % 12 === 0 ? `<span>${noteName(n)}</span>` : ''}</div>`;
   });
-  for (let n = viewBase; n <= viewBase + 24; n++) {
+  for (let n = lo; n <= hi; n++) {
     if (![1, 3, 6, 8, 10].includes(n % 12)) continue;
     const i = whites.indexOf(n - 1);
     html += `<div class="bk" data-n="${n}" style="left:${(i + 1) * w - w * .3}%;width:${w * .6}%"></div>`;
