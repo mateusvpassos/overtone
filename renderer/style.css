@@ -131,13 +131,14 @@ select {
 select:focus { border-color: var(--accent); }
 /* lista do select no tema do app (sem a lista clara do Windows) */
 select, ::picker(select) { appearance: base-select; }
-select { display: inline-flex; align-items: center; gap: 6px; }
+select { display: inline-flex; align-items: center; gap: 6px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 select::picker-icon { content: ''; width: 14px; height: 14px; background: var(--muted); -webkit-mask: url("data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 viewBox=%270 0 24 24%27 fill=%27none%27 stroke=%27black%27 stroke-width=%272.5%27 stroke-linecap=%27round%27 stroke-linejoin=%27round%27%3E%3Cpath d=%27m6 9 6 6 6-6%27/%3E%3C/svg%3E") center / contain no-repeat; transition: rotate .15s; }
 select:open::picker-icon { rotate: 180deg; }
 ::picker(select) {
   margin-top: 4px; padding: 4px; max-height: 320px;
   background: #1d1f29; border: 1px solid var(--border-2); border-radius: 10px;
   box-shadow: 0 20px 50px -10px rgba(0, 0, 0, .8);
+  scrollbar-width: thin; scrollbar-color: var(--border-2) transparent;
 }
 option { padding: 6px 10px; border-radius: 6px; color: var(--text); font-size: 13px; cursor: pointer; }
 option::checkmark { display: none; }
