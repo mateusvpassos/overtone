@@ -148,6 +148,20 @@ ipcMain.handle('learn:open-mid', async () => {
 });
 ipcMain.handle('win:fullscreen', (_, on) => win.setFullScreen(!!on));
 
+// ---------- sobre ----------
+const REPO = 'https://github.com/mateusvpassos/overtone';
+// instalado, LICENSE e avisos ficam em resources/ (extraResources); rodando do código, na raiz
+const resFile = (packaged, dev) => app.isPackaged ? path.join(process.resourcesPath, packaged) : path.join(__dirname, dev);
+ipcMain.handle('app:about', () => ({ version: app.getVersion() }));
+ipcMain.handle('app:notices', () => [resFile('LICENSE.txt', 'LICENSE'), resFile('THIRD-PARTY-NOTICES.md', 'THIRD-PARTY-NOTICES.md')]
+  .map(f => { try { return fs.readFileSync(f, 'utf8'); } catch { return ''; } })
+  .join('\n\n' + '─'.repeat(60) + '\n\n'));
+ipcMain.handle('app:open', (_, which) => {
+  if (which === 'licenses') return shell.openPath(resFile('licenses', 'licenses'));
+  const url = { repo: REPO, issues: REPO + '/issues/new/choose' }[which];
+  if (url) shell.openExternal(url);
+});
+
 // ---------- salvamento automático da sessão ----------
 const autoFile = () => path.join(app.getPath('userData'), 'autosave.json');
 ipcMain.on('auto:save', (_, data) => {

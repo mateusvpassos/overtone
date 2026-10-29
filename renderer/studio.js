@@ -920,7 +920,7 @@ window.addEventListener('keydown', e => {
   if (e.target.tagName === 'SELECT' || e.ctrlKey || e.altKey || e.repeat) return;
   if (e.code === 'KeyQ') setArp('on', !S.arp.on);
   if (e.code === 'KeyC') { S.countIn = !S.countIn; renderCount(); save(); toast(icon('metronome') + `Contagem ${S.countIn ? 'ligada' : 'desligada'}`); }
-  if (e.code === 'Escape') for (const id of ['#roll-modal', '#seq-modal', '#synth-modal']) closeModal(id);
+  if (e.code === 'Escape') for (const id of ['#roll-modal', '#seq-modal', '#synth-modal', '#about-modal']) closeModal(id);
 });
 
 // início (chamado pelo extras.js, que carrega por último)

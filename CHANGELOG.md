@@ -4,6 +4,11 @@ Mudanças de cada versão do Overtone. Formato baseado em [Keep a Changelog](htt
 
 ## [Não lançado]
 
+## [0.9.1] - 2026-10-29
+
+### Adicionado
+- Tela **Sobre** (em Ajustes): versão, privacidade, créditos dos sons e do lamejs, licença MIT, licenças completas de terceiros, pasta com os textos LGPL/GPL e links para o GitHub e para reportar problema.
+
 ## [0.9.0] - 2026-10-28
 
 Primeira versão pública.
@@ -33,5 +38,6 @@ Versão de uso pessoal, não publicada.
 ### Adicionado
 - Tamanho do teclado da tela (25 a 88 teclas) e altura.
 
-[Não lançado]: https://github.com/mateusvpassos/overtone/compare/v0.9.0...HEAD
+[Não lançado]: https://github.com/mateusvpassos/overtone/compare/v0.9.1...HEAD
+[0.9.1]: https://github.com/mateusvpassos/overtone/compare/v0.9.0...v0.9.1
 [0.9.0]: https://github.com/mateusvpassos/overtone/releases/tag/v0.9.0

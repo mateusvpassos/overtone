@@ -258,6 +258,43 @@
     <label class="pop-row"><span>Swing</span><input type="range" id="set-swing" min="0" max="0.6" step="0.01" title="Atrasa as notas fora do tempo (quantizar e arpejador)"><em id="set-swing-v" class="mono"></em></label>
     <label class="pop-row wide"><span>MIDI clock</span>
       <select id="set-clock" title="Sincronizar com outro app/aparelho"><option value="off">desligado</option><option value="in">seguir de fora (BPM, play, stop)</option><option value="out">enviar o nosso</option></select></label>
+    <button id="btn-about" class="ghost small-btn set-about" title="Versão, licença e créditos"><i data-icon="info"></i>Sobre o Overtone</button>
+  </div>
+
+  <div id="about-modal" class="modal-wrap hidden" role="dialog" aria-modal="true" aria-labelledby="about-title">
+    <div class="modal panel about">
+      <div class="about-head">
+        <img src="icon.png" alt="">
+        <div>
+          <h2 id="about-title">Overtone</h2>
+          <div class="muted">Versão <span id="about-version"></span></div>
+        </div>
+        <span class="spacer"></span>
+        <button class="icon-btn ghost m-close" title="Fechar (Esc)"><i data-icon="x"></i></button>
+      </div>
+      <div class="about-body" id="about-main">
+        <p>Sons, pads, knobs e loops para o teclado MIDI, sem abrir DAW.</p>
+        <p class="about-note"><i data-icon="wifiOff"></i><span>Funciona offline: não tem conta, não envia nada pela internet e não coleta dados. O microfone só é usado quando você arma uma faixa, e seus mixes e gravações ficam neste computador, em <code>%APPDATA%\Overtone</code>.</span></p>
+        <h3>Créditos</h3>
+        <ul class="credits">
+          <li><b>Sons gravados</b><span>VCSL, Versilian Community Sample Library <span class="muted">(domínio público, CC0)</span></span></li>
+          <li><b>Violão e baixo</b><span>FreePats: roberto@zenvoid.org e Andrea Biasior <span class="muted">(CC0)</span></span></li>
+          <li><b>MP3</b><span>lamejs, porte do LAME <span class="muted">(LGPL 3.0)</span></span></li>
+          <li><b>Ícones</b><span>Lucide <span class="muted">(ISC)</span></span></li>
+          <li><b>Fontes</b><span>Geist e Geist Mono <span class="muted">(SIL OFL 1.1)</span></span></li>
+          <li><b>Base</b><span>Electron e Chromium <span class="muted">(MIT e outras)</span></span></li>
+        </ul>
+        <p class="muted small">Software livre sob a licença MIT · © 2026 Mateus Vinícius dos Passos. Fornecido "como está", sem garantia.</p>
+      </div>
+      <pre class="about-text hidden" id="about-notices"></pre>
+      <div class="about-foot">
+        <button id="about-licenses" class="small-btn"><i data-icon="fileText"></i><span>Licenças completas</span></button>
+        <button class="ghost small-btn" data-open="licenses" title="Abre a pasta com os textos da LGPL e da GPL"><i data-icon="folder"></i>Textos LGPL/GPL</button>
+        <span class="spacer"></span>
+        <button class="ghost small-btn" data-open="issues"><i data-icon="alert"></i>Reportar problema</button>
+        <button class="ghost small-btn" data-open="repo"><i data-icon="externalLink"></i>GitHub</button>
+      </div>
+    </div>
   </div>
 
   <div id="show" class="hidden">

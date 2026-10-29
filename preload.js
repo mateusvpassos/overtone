@@ -19,5 +19,8 @@ contextBridge.exposeInMainWorld('api', {
   openMidi: () => ipcRenderer.invoke('learn:open-mid'),
   setFullscreen: on => ipcRenderer.invoke('win:fullscreen', on),
   mixVersions: file => ipcRenderer.invoke('mix:versions', file),
-  mixVersionLoad: (file, id) => ipcRenderer.invoke('mix:version-load', file, id)
+  mixVersionLoad: (file, id) => ipcRenderer.invoke('mix:version-load', file, id),
+  about: () => ipcRenderer.invoke('app:about'),
+  notices: () => ipcRenderer.invoke('app:notices'),
+  openAbout: which => ipcRenderer.invoke('app:open', which)
 });

@@ -29,6 +29,23 @@ $('#btn-settings').addEventListener('click', e => {
 document.addEventListener('pointerdown', e => {
   if (!e.target.closest('#settings, #btn-settings')) $('#settings').classList.add('hidden');
 });
+// ---------- sobre (versão, licença, créditos) ----------
+async function openAbout() {
+  $('#settings').classList.add('hidden');
+  $('#about-version').textContent = (await window.api.about()).version;
+  aboutNotices(false);
+  $('#about-modal').classList.remove('hidden');
+}
+async function aboutNotices(on) {
+  if (on && !$('#about-notices').textContent) $('#about-notices').textContent = await window.api.notices();
+  $('#about-main').classList.toggle('hidden', on);
+  $('#about-notices').classList.toggle('hidden', !on);
+  $('#about-licenses span').textContent = on ? 'Voltar' : 'Licenças completas';
+}
+$('#btn-about').addEventListener('click', openAbout);
+$('#about-licenses').addEventListener('click', () => aboutNotices($('#about-notices').classList.contains('hidden')));
+for (const b of document.querySelectorAll('#about-modal [data-open]')) b.addEventListener('click', () => window.api.openAbout(b.dataset.open));
+
 $('#set-vel').addEventListener('change', e => { S.velCurve = e.target.value; save(); });
 $('#set-sub').addEventListener('change', e => { S.metroSub = +e.target.value; save(); });
 $('#set-swing').addEventListener('input', e => { S.swing = +e.target.value; renderSettings(); save(); });
