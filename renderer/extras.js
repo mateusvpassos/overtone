@@ -43,6 +43,7 @@ async function aboutNotices(on) {
   $('#about-licenses span').textContent = on ? 'Voltar' : 'Licenças completas';
 }
 $('#btn-about').addEventListener('click', openAbout);
+$('#btn-about-foot').addEventListener('click', openAbout);
 $('#about-licenses').addEventListener('click', () => aboutNotices($('#about-notices').classList.contains('hidden')));
 for (const b of document.querySelectorAll('#about-modal [data-open]')) b.addEventListener('click', () => window.api.openAbout(b.dataset.open));
 

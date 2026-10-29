@@ -7,7 +7,11 @@ Mudanças de cada versão do Overtone. Formato baseado em [Keep a Changelog](htt
 ## [0.9.1] - 2026-10-29
 
 ### Adicionado
-- Tela **Sobre** (em Ajustes): versão, privacidade, créditos dos sons e do lamejs, licença MIT, licenças completas de terceiros, pasta com os textos LGPL/GPL e links para o GitHub e para reportar problema.
+- Tela **Sobre** (botão no rodapé, como no Lembreme, e em Ajustes): versão, privacidade, créditos dos sons e do lamejs, licença MIT, licenças completas de terceiros, pasta com os textos LGPL/GPL e links para o GitHub e para reportar problema.
+
+### Alterado
+- As listas de opção (Toque, Metrônomo, Teclas, Escala...) abrem no tema escuro do app, em vez da lista clara do Windows.
+- A linha de atalhos do rodapé não quebra mais em duas linhas.
 
 ## [0.9.0] - 2026-10-28
 
