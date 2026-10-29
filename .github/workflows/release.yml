@@ -1,0 +1,50 @@
+name: Release
+
+# 1. CHANGELOG.md: mova o "Não lançado" para "## [0.9.1] - AAAA-MM-DD"
+# 2. package.json: "version": "0.9.1"
+# 3. git tag v0.9.1 && git push origin v0.9.1
+on:
+  push:
+    tags: ['v*']
+
+permissions:
+  contents: write
+
+jobs:
+  release:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - name: Tag, package.json e CHANGELOG batem
+        shell: bash
+        run: |
+          VERSAO="${GITHUB_REF_NAME#v}"
+          PKG=$(node -p "require('./package.json').version")
+          [ "$PKG" = "$VERSAO" ] || { echo "::error::package.json está em $PKG, a tag é $GITHUB_REF_NAME"; exit 1; }
+          bash scripts/release-notes.sh "$VERSAO" > notas.md
+          [ -s notas.md ] || { echo "::error::CHANGELOG.md não tem a seção [$VERSAO]"; exit 1; }
+      - run: npm ci
+      # o pacote electron não baixa o binário no install; o build usa node_modules/electron/dist (electronDist)
+      - run: node node_modules/electron/install.js
+      - run: npm test
+      - name: Instalador
+        # numa tag o electron-builder tenta publicar sozinho; quem publica é o passo abaixo
+        run: npm run dist -- --publish never
+      - name: GitHub Release
+        shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          VERSAO="${GITHUB_REF_NAME#v}"
+          EXE="dist/Overtone-Setup-$VERSAO.exe"
+          {
+            echo
+            echo "O instalador não é assinado: no aviso do SmartScreen, clique em **Mais informações → Executar assim mesmo**."
+            echo
+            echo "SHA-256 \`Overtone-Setup-$VERSAO.exe\`: \`$(sha256sum "$EXE" | cut -d' ' -f1)\`"
+          } >> notas.md
+          gh release create "$GITHUB_REF_NAME" --title "Overtone $VERSAO" --notes-file notas.md "$EXE"

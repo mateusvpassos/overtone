@@ -5,6 +5,8 @@ const fs = require('fs');
 
 app.setName('Overtone');
 app.setAppUserModelId('com.mateusvpassos.overtone');
+// desenvolvimento/testes: pasta de dados separada
+if (process.env.OVERTONE_DATA) app.setPath('userData', process.env.OVERTONE_DATA);
 // latência baixa: não deixa o Chromium economizar no áudio/timers com a janela em segundo plano
 app.commandLine.appendSwitch('disable-background-timer-throttling');
 app.commandLine.appendSwitch('disable-renderer-backgrounding');
@@ -96,13 +98,17 @@ ipcMain.handle('export:audio', async (_, name, format, rate, left, right) => {
   return { file: r.filePath, bytes };
 });
 ipcMain.handle('export:reveal', (_, file) => shell.showItemInFolder(file));
+// só grava faixas na pasta que o usuário escolheu no diálogo
+let pickedDir = null;
 ipcMain.handle('export:pick-folder', async () => {
   const r = await dialog.showOpenDialog(win, { title: 'Pasta para as faixas', defaultPath: app.getPath('music'), properties: ['openDirectory', 'createDirectory'] });
-  return r.canceled ? null : r.filePaths[0];
+  pickedDir = r.canceled ? null : r.filePaths[0];
+  return pickedDir;
 });
 // nome de arquivo seguro no Windows (as faixas podem ter qualquer nome)
 const safeName = n => n.replace(/[<>:"/\\|?*\p{Cc}]+/gu, '').trim().slice(0, 120) || 'faixa';
 ipcMain.handle('export:audio-to', (_, dir, name, format, rate, left, right) => {
+  if (!pickedDir || path.resolve(dir) !== path.resolve(pickedDir)) throw new Error('pasta não escolhida');
   const file = path.join(dir, `${safeName(name)}.${format === 'mp3' ? 'mp3' : 'wav'}`);
   writeAudio(file, left, right, rate);
   return file;
@@ -151,7 +157,14 @@ ipcMain.on('auto:save', (_, data) => {
   } catch {}
 });
 ipcMain.handle('auto:load', () => {
-  try { return JSON.parse(fs.readFileSync(autoFile(), 'utf8')); } catch { return null; }
+  if (!fs.existsSync(autoFile())) return null;
+  try {
+    return JSON.parse(fs.readFileSync(autoFile(), 'utf8'));
+  } catch {
+    // sessão corrompida: guarda uma cópia antes do próximo salvamento automático sobrescrever
+    try { fs.copyFileSync(autoFile(), autoFile() + '.corrompido-' + Date.now()); } catch {}
+    return null;
+  }
 });
 
 app.on('second-instance', () => {
@@ -161,11 +174,15 @@ app.on('second-instance', () => {
 });
 
 app.whenReady().then(() => {
-  // Web MIDI precisa de permissão; só a página local pede
-  const allow = p => p === 'midi' || p === 'midiSysex' || p === 'media';
-  session.defaultSession.setPermissionRequestHandler((_, p, cb) => cb(allow(p)));
-  session.defaultSession.setPermissionCheckHandler((_, p) => allow(p));
+  // Web MIDI e microfone precisam de permissão; câmera e o resto ficam negados
+  const allow = (p, d) => p === 'midi' || p === 'midiSysex'
+    || (p === 'media' && !(d?.mediaTypes || []).includes('video') && d?.mediaType !== 'video');
+  session.defaultSession.setPermissionRequestHandler((_, p, cb, d) => cb(allow(p, d)));
+  session.defaultSession.setPermissionCheckHandler((_, p, __, d) => allow(p, d));
   createWindow();
+  // nada de abrir links ou navegar para fora do app
+  win.webContents.setWindowOpenHandler(() => ({ action: 'deny' }));
+  win.webContents.on('will-navigate', e => e.preventDefault());
 });
 
 app.on('window-all-closed', () => app.quit());

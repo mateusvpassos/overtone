@@ -1,21 +1,30 @@
 {
   "name": "overtone",
-  "version": "0.8.1",
-  "description": "Overtone — sons, pads e knobs pro teclado MIDI sem abrir DAW (Electron)",
+  "version": "0.9.0",
+  "description": "Overtone — sons, pads, loops e knobs para teclado MIDI sem abrir DAW",
   "main": "main.js",
   "private": true,
+  "author": "Mateus Vinícius dos Passos",
+  "license": "MIT",
+  "homepage": "https://github.com/mateusvpassos/overtone",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/mateusvpassos/overtone.git"
+  },
   "scripts": {
     "start": "electron .",
     "icon": "electron scripts/make-icon.js",
     "dist": "electron-builder --win nsis",
-    "dist:dir": "electron-builder --win --dir"
+    "dist:dir": "electron-builder --win --dir",
+    "test": "node --test exporter.test.js"
   },
   "build": {
     "appId": "com.mateusvpassos.overtone",
     "productName": "Overtone",
     "electronDist": "node_modules/electron/dist",
     "asarUnpack": [
-      "renderer/samples/**"
+      "renderer/samples/**",
+      "node_modules/lamejs/**"
     ],
     "files": [
       "main.js",
@@ -37,10 +46,24 @@
       "createStartMenuShortcut": true,
       "shortcutName": "Overtone",
       "artifactName": "Overtone-Setup-${version}.${ext}"
-    }
+    },
+    "extraResources": [
+      {
+        "from": "LICENSE",
+        "to": "LICENSE.txt"
+      },
+      {
+        "from": "THIRD-PARTY-NOTICES.md",
+        "to": "THIRD-PARTY-NOTICES.md"
+      },
+      {
+        "from": "licenses",
+        "to": "licenses"
+      }
+    ]
   },
   "devDependencies": {
-    "electron": "^44.7.0",
+    "electron": "^44.10.0",
     "electron-builder": "^26.15.3"
   },
   "dependencies": {

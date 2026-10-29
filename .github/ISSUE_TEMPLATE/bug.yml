@@ -1,0 +1,42 @@
+name: Problema
+description: Algo não funciona como deveria
+labels: [bug]
+body:
+  - type: textarea
+    id: oque
+    attributes:
+      label: O que aconteceu?
+      description: E o que você esperava que acontecesse.
+    validations:
+      required: true
+  - type: textarea
+    id: passos
+    attributes:
+      label: Como reproduzir
+      placeholder: |
+        1. Liguei o arpejador e gravei um loop
+        2. ...
+    validations:
+      required: true
+  - type: input
+    id: versao
+    attributes:
+      label: Versão do Overtone
+      placeholder: "0.9.0"
+    validations:
+      required: true
+  - type: input
+    id: teclado
+    attributes:
+      label: Teclado ou controlador MIDI
+      placeholder: "AMW Master25, Akai MPK Mini, nenhum (teclado do PC)..."
+  - type: input
+    id: windows
+    attributes:
+      label: Versão do Windows
+      placeholder: "Windows 11 24H2"
+  - type: textarea
+    id: extra
+    attributes:
+      label: Mais detalhes
+      description: Mensagem de erro, mix (.json de %APPDATA%\Overtone\mixes) ou captura de tela, se ajudar.

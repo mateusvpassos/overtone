@@ -1,6 +1,20 @@
 # Overtone
 
-Toca o teclado MIDI (feito pro AMW Master25 / "MIDI KeyBoard 25A") sem abrir DAW. Electron + Web MIDI + WebAudio, sem samples. Mesma família visual do Kino, Strata e Lembreme.
+Toca o teclado MIDI (feito pro AMW Master25 / "MIDI KeyBoard 25A", funciona com outros) sem abrir DAW. Electron + Web MIDI + WebAudio, com sons sintetizados e instrumentos gravados em domínio público. Mesma família visual do Kino, Strata e Lembreme.
+
+*Play a MIDI keyboard without a DAW: sounds, drum pads, knobs, loops and export to WAV/MP3/MIDI. Windows app; the interface is in Brazilian Portuguese.*
+
+## Baixar
+
+Instalador em [Releases](https://github.com/mateusvpassos/overtone/releases) (`Overtone-Setup-<versão>.exe`). O instalador não é assinado, então o Windows pode mostrar o aviso do SmartScreen: clique em **Mais informações → Executar assim mesmo**.
+
+## Privacidade
+
+O Overtone funciona offline: não tem conta, não envia nada pela internet e não coleta dados de uso.
+
+- **Teclado MIDI:** o app pede acesso ao MIDI para ler o teclado e, se você ligar o MIDI clock, enviar o tempo a outros apps.
+- **Microfone:** só é usado quando você arma uma faixa para gravar. A câmera nunca é pedida.
+- **Seus arquivos** ficam no seu computador, em `%APPDATA%\Overtone`: mixes (`mixes\`, com as versões anteriores em `mixes\.versoes\`), gravações do microfone (`audio\`), a sessão salva automaticamente (`autosave.json`) e as preferências. Para apagar tudo, desinstale e remova essa pasta.
 
 ## Recursos
 - **27 sons** em 6 grupos:
@@ -89,5 +103,17 @@ npm run dist
 ```
 Saída em `dist/Overtone-Setup-<versão>.exe`. Ícone: `assets/icon.svg` → `npm run icon` gera `renderer/icon.png`. Preferências salvas no localStorage do app (`%APPDATA%\Overtone`).
 
+Testes: `npm test`.
+
+Publicar uma versão: anote as mudanças em [CHANGELOG.md](CHANGELOG.md), suba a versão no `package.json` e crie a tag (`git tag v0.9.1 && git push origin v0.9.1`). O workflow `release.yml` confere que os três batem, roda os testes, gera o instalador e cria a Release com as notas do CHANGELOG.
+
 ## Créditos
-Piano, vibrafone, harpa, sax, bateria e percussão: [VCSL — Versilian Community Sample Library](https://github.com/sgossner/VCSL). Violão nylon e baixo elétrico: [FreePats](https://freepats.zenvoid.org/). Tudo em domínio público (CC0 1.0). Foram convertidos para OGG e encurtados por `renderer/samples/samples.json`.
+Piano de cauda e de armário, cravo, órgão de tubos, vibrafone, harpa, sax, bateria e percussão: [VCSL — Versilian Community Sample Library](https://github.com/sgossner/VCSL). Violão nylon e baixo elétrico: [FreePats](https://freepats.zenvoid.org/). Tudo em domínio público (CC0 1.0). Foram convertidos para OGG e encurtados por `renderer/samples/samples.json`.
+
+## Contribuir e segurança
+
+Veja [CONTRIBUTING.md](CONTRIBUTING.md). Falhas de segurança: [SECURITY.md](SECURITY.md) (não abra issue pública).
+
+## Licença
+
+MIT ([LICENSE](LICENSE)). O codificador de MP3 [lamejs](https://github.com/zhuker/lamejs) é LGPL 3.0; fontes Geist (OFL 1.1) e ícones Lucide (ISC). Detalhes em [THIRD-PARTY-NOTICES.md](THIRD-PARTY-NOTICES.md).
