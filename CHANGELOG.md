@@ -4,6 +4,9 @@ Mudanças de cada versão do Overtone. Formato baseado em [Keep a Changelog](htt
 
 ## [Não lançado]
 
+### Corrigido
+- Uma lista de opção com texto comprido fica numa linha só, cortada com reticências, e a lista aberta usa a barra de rolagem escura.
+
 ## [0.9.1] - 2026-10-29
 
 ### Adicionado
